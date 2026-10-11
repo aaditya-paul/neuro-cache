@@ -1,8 +1,8 @@
-# SMARTCACHE AI 🧠⚡
+# NEUROCACHE 🧠⚡
 > *“Learning what to keep before you need it.”*  
 > **Team BONGORITHM** — Hackathon Build Specification & Prototype
 
-SMARTCACHE AI is an adaptive, online-learning cache replacement prototype. Instead of relying on static heuristics (such as fixed LRU or fixed LFU), SMARTCACHE AI deploys LRU and LFU as parallel **experts**, tracks eviction regrets using **dual shadow (ghost) caches**, and dynamically tunes decision weights using **Exponential Gradient (Exp3/Hedge)** reinforcement updates.
+SMART AI is an adaptive, online-learning cache replacement prototype. Instead of relying on static heuristics (such as fixed LRU or fixed LFU), SMARTCACHE AI deploys LRU and LFU as parallel **experts**, tracks eviction regrets using **dual shadow (ghost) caches**, and dynamically tunes decision weights using **Exponential Gradient (Exp3/Hedge)** reinforcement updates.
 
 ---
 
