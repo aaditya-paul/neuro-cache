@@ -118,11 +118,9 @@ class LeCaRAdaptivePolicy(BasePolicy):
         self.weight_history: List[Tuple[int, float, float]] = [(0, 0.5, 0.5)]
 
     def _get_halflife(self) -> float:
-        """Compute memory halflife in requests, dynamically bounded and shift-aware."""
+        """Compute memory halflife in requests, dynamically bounded."""
         hl = self.capacity * self.halflife_mult
-        if self.is_shift_active:
-            hl = min(hl, max(2.0, self.capacity * 1.5))
-        return max(2.0, hl)
+        return max(3.0, hl)
 
     def _get_effective_utility(self, item: Any) -> float:
         """Compute effective decayed access utility for a cached block."""
@@ -132,9 +130,20 @@ class LeCaRAdaptivePolicy(BasePolicy):
         return f * math.exp(-0.693 * age / hl)
 
     def choose_victim(self, cache_items: Set[Any], context: Optional[Dict[str, Any]] = None) -> Any:
-        """Select a victim by consulting LRU and LFU experts and evaluating decayed utility."""
+        """Select a victim by consulting LRU and LFU experts, protecting proven items from scans."""
         v_lru = self.lru_expert.choose_victim(cache_items, context)
         v_lfu = self.lfu_expert.choose_victim(cache_items, context)
+
+        # Identify probationary / cold / stale items whose decayed utility < 1.0
+        prob_items = [item for item in cache_items if self._get_effective_utility(item) < 1.0]
+
+        # Scan-resistance protection: if candidate victims have demonstrated reuse (u >= 1.0),
+        # but transient/stale items exist in cache, steer candidates toward probationary items
+        if prob_items:
+            if self._get_effective_utility(v_lru) >= 1.0:
+                v_lru = min(prob_items, key=lambda x: self._get_effective_utility(x))
+            if self._get_effective_utility(v_lfu) >= 1.0:
+                v_lfu = min(prob_items, key=lambda x: self._get_effective_utility(x))
 
         if v_lru == v_lfu:
             # Both experts agree: consensus eviction
@@ -146,7 +155,7 @@ class LeCaRAdaptivePolicy(BasePolicy):
         u_lfu = self._get_effective_utility(v_lfu)
 
         if self.deterministic:
-            if u_lfu <= u_lru:
+            if u_lfu < u_lru or (abs(u_lfu - u_lru) < 1e-6 and self.w_lfu >= self.w_lru):
                 chosen = "LFU"
                 victim = v_lfu
             else:

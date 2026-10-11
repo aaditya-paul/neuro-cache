@@ -100,12 +100,12 @@ Run the complete unit and integration test suite:
 ```powershell
 .venv\Scripts\pytest.exe -v tests/
 ```
-All **33 unit and integration tests** cover:
+All **40 unit and integration tests** cover:
 - Capacity-1 edge cases and simulator accounting invariants
 - LRU recency tracking and LFU frequency bucketing
 - Belady future-use oracle guarantees
 - Classic LeCaR, ARC, and SIEVE compliance
-- SmartCache AI trained config loading, effective decayed utility protection, single-miss damping, shift detection, measurable policy switching, consensus neutrality, and ghost TTL expiration.
+- SmartCache AI trained config loading, scan-resistant probation filtering, effective decayed utility protection, single-miss damping, shift detection, measurable policy switching, consensus neutrality, and ghost TTL expiration.
 
 ---
 

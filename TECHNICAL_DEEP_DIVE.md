@@ -349,12 +349,12 @@ neuro-cache/policies/
 
 ### 8.7 SmartCache AI (`policies/adaptive.py`)
 - **Core Architecture**: Strengthened LeCaR with dual ghost caches ($H_{\text{LRU}}, H_{\text{LFU}}$), sliding-window shift detection, single-miss damping, consensus neutrality, and temporal TTL pruning.
-- **Trained Decayed Utility Engine (`train.py`)**:
+- **Probation-Filtered Decayed Utility Engine (`train.py`)**:
   Rather than blindly flipping a coin between LRU and LFU during scan bursts, SmartCache AI evaluates the **effective decayed utility** of candidate victims:
   $$u(v) = \min(F_{\max}, \text{freq}(v)) \cdot \exp\left(-\frac{\ln(2) \cdot \text{age}(v)}{\tau}\right)$$
   where $\tau = C \cdot \text{halflife\_mult}$ is the memory horizon trained offline across benchmark corpora.
-  - **Scan Protection**: Cold scan items ($f=1, \text{age}=1 \implies u=1.0$) are evicted immediately over hot items ($f=20, \text{age}=5 \implies u=16.5$), completely eliminating scan pollution.
-  - **Phase Shift Agility**: Obsolete frequency items from dead phases decay to $u \to 0$ as their age increases, allowing smooth flushing of stale data.
+  - **Scan-Resistant Probation Steering**: Cold scan items enter with $f=1$. When a candidate victim has demonstrated reuse ($u(v) \ge 1.0$), SmartCache AI inspects resident items for probationary/stale blocks ($u < 1.0$). Eviction candidates are steered to discard cold probationary items first, protecting the working set from sequential scans (mirroring probation principles in ARC, CACHEUS, and TinyLFU).
+  - **Phase Shift Agility**: Obsolete frequency items from dead phases naturally decay to $u < 1.0$ as their age increases beyond the decay horizon $\tau$, allowing smooth and rapid eviction of stale data without requiring artificial memory resets.
 - **Offline Training Pipeline**: Pre-trained hyperparameters are optimized using `train.py` across diverse workload distributions and serialized to `models/trained_config.json`.
 
 ---
@@ -370,12 +370,12 @@ All 7 policies were executed against identical deterministic traces on Python 3.
 | **Phase Shift (Shift)** | **5** | **47.67%** | 21.00% | 33.56% | 33.44% | 33.11% | **34.00%** | **32.11%** (Lowest Penalty 🏆) |
 | | 10 | 64.44% | 35.44% | 64.44% | 64.44% | 63.67% | 64.44% | **64.44%** 🏆 |
 | | 20 | 64.44% | 64.44% | 64.44% | 64.44% | 64.44% | 64.44% | **64.44%** 🏆 |
-| **Zipf Skew ($\alpha=1.0$)** | 5 | 46.50% | 35.60% | 25.10% | 34.60% | 33.60% | 30.10% | **38.80%** 🏆 |
-| | 10 | 60.60% | 49.60% | 39.90% | 48.20% | 44.70% | 42.20% | **52.60%** 🏆 |
-| | 20 | 73.70% | 63.30% | 55.90% | **63.70%** | 59.70% | 59.50% | **61.10%** (Beats ARC & LeCaR) |
-| **Mixed Workload** | 5 | 26.10% | 16.50% | 8.70% | 14.30% | 14.10% | 8.80% | 11.30% |
-| | 10 | 37.90% | 28.20% | 15.00% | 25.60% | **29.10%** | 15.90% | 20.20% |
-| | 20 | 45.30% | 41.70% | 23.20% | 41.70% | **42.10%** | 33.20% | **41.30%** (Ties SIEVE/LFU) |
+| **Zipf Skew ($\alpha=1.0$)** | 5 | 46.50% | 35.60% | 25.10% | 34.60% | 33.60% | 30.10% | **38.20%** 🏆 |
+| | 10 | 60.60% | 49.60% | 39.90% | 48.20% | 44.70% | 42.20% | **51.70%** 🏆 |
+| | 20 | 73.70% | 63.30% | 55.90% | 63.70% | 59.70% | 59.50% | **64.10%** 🏆 (Beats All Competitors) |
+| **Mixed Workload** | 5 | 26.10% | 16.50% | 8.70% | 14.30% | 14.10% | 8.80% | **16.30%** (Beats ARC & SIEVE) |
+| | 10 | 37.90% | 28.20% | 15.00% | 25.60% | 29.10% | 15.90% | **30.70%** 🏆 (Beats ARC & LFU) |
+| | 20 | 45.30% | 41.70% | 23.20% | 41.70% | **42.10%** | 33.20% | **41.40%** (Ties SIEVE/LFU) |
 | **Looping (Hot Set)** | 5 | 42.60% | 0.00% | 0.00% | 0.00% | **8.80%** | 0.00% | 0.00% |
 | | 10 | 91.80% | 91.00% | 91.20% | 87.20% | 91.40% | 91.00% | **91.00%** |
 | | 20 | 94.00% | 94.00% | 94.00% | 94.00% | 94.00% | 94.00% | **94.00%** 🏆 |

@@ -224,16 +224,17 @@ class LeCaRAdaptivePolicy(BasePolicy):
 - **How It Works**: Computes elapsed steps since last access, evaluates exponential decay against adaptive halflife $\tau$, and scales by capped frequency.
 
 #### `LeCaRAdaptivePolicy.choose_victim(cache_items, context)`
-- **Why It's Used**: Decides which item to evict by consulting LRU and LFU experts and evaluating their candidates against the decayed effective utility model.
+- **Why It's Used**: Decides which item to evict by consulting LRU and LFU experts, evaluating candidate items against the decayed effective utility model, and protecting verified items from cold scan pollution.
 - **How It Works**:
   1. Calls `v_lru = self.lru_expert.choose_victim(cache_items)`.
   2. Calls `v_lfu = self.lfu_expert.choose_victim(cache_items)`.
-  3. If $v_{lru} == v_{lfu}$ (consensus): sets `self.last_chosen_expert = "CONSENSUS"` and returns the agreed victim.
-  4. If $v_{lru} \ne v_{lfu}$ (disagreement):
+  3. **Scan-Resistant Probation Steering**: Inspects resident items for probationary/stale blocks with decayed utility $u < 1.0$. If candidate victims have demonstrated reuse ($u \ge 1.0$) but probationary items exist in cache, candidates are steered towards the least valuable probationary item (mirroring ARC/TinyLFU probation mechanics).
+  4. If $v_{lru} == v_{lfu}$ (consensus): sets `self.last_chosen_expert = "CONSENSUS"` and returns the agreed victim.
+  5. If $v_{lru} \ne v_{lfu}$ (disagreement):
      - Computes decayed utilities $u_{lru} = u(v_{lru})$ and $u_{lfu} = u(v_{lfu})$.
-     - In deterministic mode (default): evicts the candidate with lower decayed utility (`v_lfu` if $u_{lfu} \le u_{lru}$ else `v_lru`).
+     - In deterministic mode (default): evicts the candidate with lower decayed utility (`v_lfu` if $u_{lfu} < u_{lru}$ or tie-breaking via expert weights, else `v_lru`).
      - In stochastic mode: samples with soft sigmoid probability modulated by $u_{lru} - u_{lfu}$.
-  5. Returns the chosen victim.
+  6. Returns the chosen victim.
 
 #### `LeCaRAdaptivePolicy.on_hit(item, context)`
 - **Why It's Used**: Maintains state synchronization across both sub-experts, purges active cache items from ghost caches, and tracks baseline hit rates.

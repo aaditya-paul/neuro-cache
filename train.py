@@ -53,17 +53,27 @@ class EvaluatorPolicy(LRUPolicy):
     def get_state(self) -> Dict[str, Any]:
         return {}
 
+    def _get_effective_utility(self, item: Any) -> float:
+        age = self.step - self.last_access.get(item, self.step)
+        f = min(self.freq_cap, float(self.freq.get(item, 1)))
+        return f * math.exp(-0.693 * age / self.halflife)
+
     def choose_victim(self, cache_items: set, context: Any = None) -> Any:
         v_lru = self.lru.choose_victim(cache_items, context)
         v_lfu = self.lfu.choose_victim(cache_items, context)
+
+        prob_items = [item for item in cache_items if self._get_effective_utility(item) < 1.0]
+        if prob_items:
+            if self._get_effective_utility(v_lru) >= 1.0:
+                v_lru = min(prob_items, key=lambda x: self._get_effective_utility(x))
+            if self._get_effective_utility(v_lfu) >= 1.0:
+                v_lfu = min(prob_items, key=lambda x: self._get_effective_utility(x))
+
         if v_lru == v_lfu:
             return v_lru
 
-        age_lru = self.step - self.last_access.get(v_lru, self.step)
-        age_lfu = self.step - self.last_access.get(v_lfu, self.step)
-
-        ef_lru = min(self.freq_cap, float(self.freq.get(v_lru, 1))) * math.exp(-0.693 * age_lru / self.halflife)
-        ef_lfu = min(self.freq_cap, float(self.freq.get(v_lfu, 1))) * math.exp(-0.693 * age_lfu / self.halflife)
+        ef_lru = self._get_effective_utility(v_lru)
+        ef_lfu = self._get_effective_utility(v_lfu)
 
         return v_lfu if ef_lfu <= ef_lru else v_lru
 

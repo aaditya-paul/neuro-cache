@@ -1,13 +1,13 @@
 {
   "metadata": {
-    "trained_at": "2026-10-11T12:04:53.805809",
-    "epochs": 8,
+    "trained_at": "2026-10-11T14:56:51.654667",
+    "epochs": 10,
     "seed": 42,
-    "training_time_seconds": 8.06
+    "training_time_seconds": 5.32
   },
   "hyperparameters": {
-    "halflife_mult": 5.0,
-    "freq_cap": 15.0,
+    "halflife_mult": 5.35,
+    "freq_cap": 14.4,
     "learning_rate": 0.35,
     "history_multiplier": 2.0,
     "ttl_multiplier": 3.0,
@@ -16,6 +16,6 @@
     "epsilon_min": 0.005
   },
   "performance": {
-    "mean_training_hit_rate": 0.4794
+    "mean_training_hit_rate": 0.4789
   }
 }

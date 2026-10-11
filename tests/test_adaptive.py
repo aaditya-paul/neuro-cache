@@ -182,3 +182,15 @@ def test_effective_utility_protects_hot_items_from_scan():
     u1 = policy._get_effective_utility(1)
     u2 = policy._get_effective_utility(2)
     assert u1 > u2
+
+
+def test_mixed_workload_probation_preserves_hot_set():
+    """SmartCache AI must resist scan bursts on mixed workload and exceed 28% hit rate at C=10."""
+    from workloads.generators import generate_mixed_trace
+    trace = generate_mixed_trace(total_requests=1000, seed=42)
+    policy = LeCaRAdaptivePolicy(capacity=10)
+    sim = CacheSimulator(capacity=10, policy=policy)
+    res = sim.run(trace)
+    # Mixed hit rate must beat ARC/LFU baselines (>= 28%)
+    assert res.hit_rate >= 0.28, f"Hit rate was {res.hit_rate}, expected >= 0.28"
+
