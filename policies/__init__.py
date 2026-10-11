@@ -7,6 +7,7 @@ from policies.adaptive import LeCaRAdaptivePolicy
 from policies.arc import ARCPolicy
 from policies.sieve import SIEVEPolicy
 from policies.classic_lecar import ClassicLeCaRPolicy
+from policies.redis_policy import RedisSampledLRUPolicy, RedisSampledLFUPolicy
 
 __all__ = [
     "BasePolicy",
@@ -17,4 +18,6 @@ __all__ = [
     "ARCPolicy",
     "SIEVEPolicy",
     "ClassicLeCaRPolicy",
+    "RedisSampledLRUPolicy",
+    "RedisSampledLFUPolicy",
 ]

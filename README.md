@@ -129,6 +129,32 @@ Results will be output to console and saved to:
 
 ---
 
+## 🔴 Benchmarking Against Redis (Live Production Datasets)
+In real-world production systems, Redis is the industry standard in-memory cache. However, Redis does not maintain exact linked lists due to pointer overhead (16–24 bytes per key). Instead, Redis implements:
+- **Redis Sampled LRU (`allkeys-lru`)**: Samples $N=5$ keys into an eviction pool of size 16 sorted by idle time.
+- **Redis Sampled LFU (`allkeys-lfu`)**: Tracks an 8-bit Morris logarithmic counter with LDT time decay.
+
+SMARTCACHE AI provides a dedicated, high-fidelity Redis benchmark suite running on realistic production traces:
+- **🛒 E-Commerce Flash Sale & Catalog**: Heavy Zipfian product catalog reads (`product:xxxx`) + active session churn (`session:user_xxx`) + sudden flash sale surge.
+- **🛡️ Batch Scan Attack (Cache Pollution)**: Core working set interrupted by background ETL/reporting crawler scans (`batch:scan:export_xxxx`).
+- **🌐 API Gateway & Session Cache**: Microservice route caching + user profiles + auth tokens.
+- **🌗 Day/Night Traffic Phase Shift**: Global diurnal traffic transitions.
+
+### Running the Head-to-Head Redis Benchmark:
+```powershell
+.venv\Scripts\python.exe -m benchmarks.redis_live_benchmark --length 1000 --capacities 10 25 50
+```
+Results are saved to:
+- `results/redis_benchmark_summary.csv`
+- `results/redis_benchmark_summary.json`
+
+### Optional: Live TCP Execution against a Running Redis Instance:
+```powershell
+.venv\Scripts\python.exe -m benchmarks.redis_live_benchmark --live-redis "redis://localhost:6379/0"
+```
+
+---
+
 ## 🖥️ Launching the Interactive Dashboard
 Launch the visual Streamlit web application:
 ```powershell
@@ -137,10 +163,11 @@ Launch the visual Streamlit web application:
 Open your browser at `http://localhost:8501`.
 
 ### Dashboard Features:
-1. **Live Simulator & Telemetry**: Configure capacity, workloads, and watch real-time rolling hit rates, cache chips, and adaptive weights.
-2. **Workload-Shift Demo**: Observe the exact moment access patterns change (Hot Set $\to$ Scan $\to$ Hot Set B) and see SmartCache dynamically re-weight recency vs frequency.
-3. **Multi-Policy Benchmark Matrix**: Grouped bar charts, penalty comparisons, and pivot tables across all 7 policies.
-4. **Theory & Architecture**: Mathematical walkthrough of online learning, regret attribution, and comparisons with ARC and SIEVE.
+1. **Live Simulator & Telemetry**: Configure capacity, workloads (including Redis production traces), and watch real-time rolling hit rates, cache chips, and adaptive weights.
+2. **🔴 Redis vs SmartCache AI (Live Benchmark)**: Direct side-by-side head-to-head comparison against Redis Sampled LRU and LFU on live production traces, featuring rolling hit-rate timelines, scan pollution analysis, and real Redis key chip breakdown.
+3. **Workload-Shift Demo**: Observe the exact moment access patterns change (Hot Set $\to$ Scan $\to$ Hot Set B) and see SmartCache dynamically re-weight recency vs frequency.
+4. **Multi-Policy Benchmark Matrix**: Grouped bar charts, penalty comparisons, and pivot tables across all 9 policies (including Redis LRU and Redis LFU).
+5. **Theory & Architecture**: Mathematical walkthrough of online learning, regret attribution, and comparisons with Redis, ARC, and SIEVE.
 
 ---
 

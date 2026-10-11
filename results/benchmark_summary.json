@@ -12,8 +12,8 @@
     "Capacity Misses": 278,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": 45,
-    "Avg Decision (us)": 1.2227777777777777,
-    "Wall Clock (s)": 0.0036
+    "Avg Decision (us)": 1.316,
+    "Wall Clock (s)": 0.0039
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -28,8 +28,40 @@
     "Capacity Misses": 391,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": 82,
-    "Avg Decision (us)": 1.6777777777777778,
-    "Wall Clock (s)": 0.0035
+    "Avg Decision (us)": 1.3562222222222222,
+    "Wall Clock (s)": 0.0028
+  },
+  {
+    "Workload": "Phase Shift (Shift)",
+    "Capacity": 5,
+    "Policy": "Redis LRU",
+    "Requests": 900,
+    "Hits": 302,
+    "Misses": 598,
+    "Hit Rate (%)": 33.56,
+    "Miss Rate (%)": 66.44,
+    "Evictions": 593,
+    "Capacity Misses": 278,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": 45,
+    "Avg Decision (us)": 3.8025555555555557,
+    "Wall Clock (s)": 0.0045
+  },
+  {
+    "Workload": "Phase Shift (Shift)",
+    "Capacity": 5,
+    "Policy": "Redis LFU",
+    "Requests": 900,
+    "Hits": 267,
+    "Misses": 633,
+    "Hit Rate (%)": 29.67,
+    "Miss Rate (%)": 70.33,
+    "Evictions": 628,
+    "Capacity Misses": 313,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": 44,
+    "Avg Decision (us)": 5.3276666666666666,
+    "Wall Clock (s)": 0.0063
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -44,8 +76,8 @@
     "Capacity Misses": 279,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": 43,
-    "Avg Decision (us)": 1.1251111111111112,
-    "Wall Clock (s)": 0.0025
+    "Avg Decision (us)": 0.8628888888888889,
+    "Wall Clock (s)": 0.002
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -60,8 +92,8 @@
     "Capacity Misses": 282,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": 50,
-    "Avg Decision (us)": 1.86,
-    "Wall Clock (s)": 0.0038
+    "Avg Decision (us)": 1.3386666666666667,
+    "Wall Clock (s)": 0.0028
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -76,8 +108,8 @@
     "Capacity Misses": 274,
     "Metadata Entries": 11,
     "Adapt Penalty Misses": 44,
-    "Avg Decision (us)": 2.469888888888889,
-    "Wall Clock (s)": 0.0044
+    "Avg Decision (us)": 3.0034444444444444,
+    "Wall Clock (s)": 0.0052
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -92,8 +124,8 @@
     "Capacity Misses": 291,
     "Metadata Entries": 31,
     "Adapt Penalty Misses": 41,
-    "Avg Decision (us)": 10.549333333333333,
-    "Wall Clock (s)": 0.0152
+    "Avg Decision (us)": 12.292777777777777,
+    "Wall Clock (s)": 0.0173
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -108,8 +140,8 @@
     "Capacity Misses": 151,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": 24,
-    "Avg Decision (us)": 0.673,
-    "Wall Clock (s)": 0.0017
+    "Avg Decision (us)": 1.0294444444444444,
+    "Wall Clock (s)": 0.0026
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -124,7 +156,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.5604444444444444,
+    "Avg Decision (us)": 0.5472222222222222,
     "Wall Clock (s)": 0.0029
   },
   {
@@ -140,8 +172,40 @@
     "Capacity Misses": 261,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": 82,
-    "Avg Decision (us)": 1.0746666666666667,
-    "Wall Clock (s)": 0.0021
+    "Avg Decision (us)": 1.3926666666666667,
+    "Wall Clock (s)": 0.0026
+  },
+  {
+    "Workload": "Phase Shift (Shift)",
+    "Capacity": 10,
+    "Policy": "Redis LRU",
+    "Requests": 900,
+    "Hits": 574,
+    "Misses": 326,
+    "Hit Rate (%)": 63.78,
+    "Miss Rate (%)": 36.22,
+    "Evictions": 316,
+    "Capacity Misses": 6,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": 6,
+    "Avg Decision (us)": 2.529888888888889,
+    "Wall Clock (s)": 0.0032
+  },
+  {
+    "Workload": "Phase Shift (Shift)",
+    "Capacity": 10,
+    "Policy": "Redis LFU",
+    "Requests": 900,
+    "Hits": 579,
+    "Misses": 321,
+    "Hit Rate (%)": 64.33,
+    "Miss Rate (%)": 35.67,
+    "Evictions": 311,
+    "Capacity Misses": 1,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": 1,
+    "Avg Decision (us)": 3.4036666666666666,
+    "Wall Clock (s)": 0.0041
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -156,8 +220,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.7746666666666666,
-    "Wall Clock (s)": 0.0021
+    "Avg Decision (us)": 0.46644444444444444,
+    "Wall Clock (s)": 0.0013
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -172,8 +236,8 @@
     "Capacity Misses": 7,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": 7,
-    "Avg Decision (us)": 1.1186666666666667,
-    "Wall Clock (s)": 0.0029
+    "Avg Decision (us)": 0.8281111111111111,
+    "Wall Clock (s)": 0.0021
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -188,8 +252,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 1.7283333333333333,
-    "Wall Clock (s)": 0.0035
+    "Avg Decision (us)": 1.989,
+    "Wall Clock (s)": 0.0038
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -204,8 +268,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 48,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 6.827,
-    "Wall Clock (s)": 0.0097
+    "Avg Decision (us)": 6.769888888888889,
+    "Wall Clock (s)": 0.0096
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -220,8 +284,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.4468888888888889,
-    "Wall Clock (s)": 0.0015
+    "Avg Decision (us)": 0.5007777777777778,
+    "Wall Clock (s)": 0.0016
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -236,7 +300,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.6695555555555556,
+    "Avg Decision (us)": 0.6722222222222222,
     "Wall Clock (s)": 0.0019
   },
   {
@@ -252,8 +316,40 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.8586666666666666,
-    "Wall Clock (s)": 0.002
+    "Avg Decision (us)": 0.876,
+    "Wall Clock (s)": 0.0021
+  },
+  {
+    "Workload": "Phase Shift (Shift)",
+    "Capacity": 20,
+    "Policy": "Redis LRU",
+    "Requests": 900,
+    "Hits": 580,
+    "Misses": 320,
+    "Hit Rate (%)": 64.44,
+    "Miss Rate (%)": 35.56,
+    "Evictions": 300,
+    "Capacity Misses": 0,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": 0,
+    "Avg Decision (us)": 3.3116666666666665,
+    "Wall Clock (s)": 0.0039
+  },
+  {
+    "Workload": "Phase Shift (Shift)",
+    "Capacity": 20,
+    "Policy": "Redis LFU",
+    "Requests": 900,
+    "Hits": 580,
+    "Misses": 320,
+    "Hit Rate (%)": 64.44,
+    "Miss Rate (%)": 35.56,
+    "Evictions": 300,
+    "Capacity Misses": 0,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": 0,
+    "Avg Decision (us)": 4.467666666666667,
+    "Wall Clock (s)": 0.0051
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -268,8 +364,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.4713333333333333,
-    "Wall Clock (s)": 0.0013
+    "Avg Decision (us)": 0.5172222222222221,
+    "Wall Clock (s)": 0.0014
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -284,8 +380,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 33,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 1.3417777777777777,
-    "Wall Clock (s)": 0.0028
+    "Avg Decision (us)": 1.026,
+    "Wall Clock (s)": 0.0023
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -300,8 +396,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 60,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 1.986,
-    "Wall Clock (s)": 0.0036
+    "Avg Decision (us)": 2.2116666666666664,
+    "Wall Clock (s)": 0.0039
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -316,8 +412,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 60,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 11.697777777777777,
-    "Wall Clock (s)": 0.0145
+    "Avg Decision (us)": 10.137222222222222,
+    "Wall Clock (s)": 0.0125
   },
   {
     "Workload": "Phase Shift (Shift)",
@@ -332,8 +428,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": 0,
-    "Avg Decision (us)": 0.5698888888888889,
-    "Wall Clock (s)": 0.0019
+    "Avg Decision (us)": 0.4668888888888889,
+    "Wall Clock (s)": 0.0014
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -348,8 +444,8 @@
     "Capacity Misses": 470,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9816,
-    "Wall Clock (s)": 0.0012
+    "Avg Decision (us)": 1.0136,
+    "Wall Clock (s)": 0.0013
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -364,8 +460,40 @@
     "Capacity Misses": 470,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.1522000000000001,
-    "Wall Clock (s)": 0.0013
+    "Avg Decision (us)": 1.2526,
+    "Wall Clock (s)": 0.0014
+  },
+  {
+    "Workload": "Looping (Hot Set)",
+    "Capacity": 5,
+    "Policy": "Redis LRU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 495,
+    "Capacity Misses": 470,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 5.9978,
+    "Wall Clock (s)": 0.0037
+  },
+  {
+    "Workload": "Looping (Hot Set)",
+    "Capacity": 5,
+    "Policy": "Redis LFU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 495,
+    "Capacity Misses": 470,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 8.491,
+    "Wall Clock (s)": 0.0051
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -380,8 +508,8 @@
     "Capacity Misses": 470,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9887999999999999,
-    "Wall Clock (s)": 0.0011
+    "Avg Decision (us)": 1.3892,
+    "Wall Clock (s)": 0.0016
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -396,8 +524,8 @@
     "Capacity Misses": 426,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.8066,
-    "Wall Clock (s)": 0.0018
+    "Avg Decision (us)": 1.7006,
+    "Wall Clock (s)": 0.0017
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -412,8 +540,8 @@
     "Capacity Misses": 470,
     "Metadata Entries": 15,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 3.1812,
-    "Wall Clock (s)": 0.0026
+    "Avg Decision (us)": 3.9278000000000004,
+    "Wall Clock (s)": 0.0032
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -428,8 +556,8 @@
     "Capacity Misses": 470,
     "Metadata Entries": 25,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 10.093399999999999,
-    "Wall Clock (s)": 0.0072
+    "Avg Decision (us)": 10.4278,
+    "Wall Clock (s)": 0.0076
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -444,8 +572,8 @@
     "Capacity Misses": 257,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.8202,
-    "Wall Clock (s)": 0.001
+    "Avg Decision (us)": 0.7694,
+    "Wall Clock (s)": 0.0009
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -460,7 +588,7 @@
     "Capacity Misses": 14,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.2546,
+    "Avg Decision (us)": 0.2404,
     "Wall Clock (s)": 0.0007
   },
   {
@@ -476,8 +604,40 @@
     "Capacity Misses": 15,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.6306,
+    "Avg Decision (us)": 0.5176000000000001,
+    "Wall Clock (s)": 0.0008
+  },
+  {
+    "Workload": "Looping (Hot Set)",
+    "Capacity": 10,
+    "Policy": "Redis LRU",
+    "Requests": 500,
+    "Hits": 433,
+    "Misses": 67,
+    "Hit Rate (%)": 86.6,
+    "Miss Rate (%)": 13.4,
+    "Evictions": 57,
+    "Capacity Misses": 37,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 1.0152,
     "Wall Clock (s)": 0.001
+  },
+  {
+    "Workload": "Looping (Hot Set)",
+    "Capacity": 10,
+    "Policy": "Redis LFU",
+    "Requests": 500,
+    "Hits": 438,
+    "Misses": 62,
+    "Hit Rate (%)": 87.6,
+    "Miss Rate (%)": 12.4,
+    "Evictions": 52,
+    "Capacity Misses": 32,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 1.7615999999999998,
+    "Wall Clock (s)": 0.0015
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -492,7 +652,7 @@
     "Capacity Misses": 34,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.29,
+    "Avg Decision (us)": 0.2922,
     "Wall Clock (s)": 0.0006
   },
   {
@@ -508,7 +668,7 @@
     "Capacity Misses": 13,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.36619999999999997,
+    "Avg Decision (us)": 0.3722,
     "Wall Clock (s)": 0.0008
   },
   {
@@ -524,8 +684,8 @@
     "Capacity Misses": 15,
     "Metadata Entries": 29,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9693999999999999,
-    "Wall Clock (s)": 0.0013
+    "Avg Decision (us)": 0.9886,
+    "Wall Clock (s)": 0.0014
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -540,7 +700,7 @@
     "Capacity Misses": 15,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 3.5332,
+    "Avg Decision (us)": 3.5264,
     "Wall Clock (s)": 0.0035
   },
   {
@@ -556,8 +716,8 @@
     "Capacity Misses": 11,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.5222,
-    "Wall Clock (s)": 0.0009
+    "Avg Decision (us)": 0.38580000000000003,
+    "Wall Clock (s)": 0.0007
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -572,8 +732,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.3966,
-    "Wall Clock (s)": 0.0014
+    "Avg Decision (us)": 0.2014,
+    "Wall Clock (s)": 0.0007
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -588,8 +748,40 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.8358,
-    "Wall Clock (s)": 0.0015
+    "Avg Decision (us)": 0.4656,
+    "Wall Clock (s)": 0.0008
+  },
+  {
+    "Workload": "Looping (Hot Set)",
+    "Capacity": 20,
+    "Policy": "Redis LRU",
+    "Requests": 500,
+    "Hits": 470,
+    "Misses": 30,
+    "Hit Rate (%)": 94.0,
+    "Miss Rate (%)": 6.0,
+    "Evictions": 10,
+    "Capacity Misses": 0,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 0.36560000000000004,
+    "Wall Clock (s)": 0.0007
+  },
+  {
+    "Workload": "Looping (Hot Set)",
+    "Capacity": 20,
+    "Policy": "Redis LFU",
+    "Requests": 500,
+    "Hits": 470,
+    "Misses": 30,
+    "Hit Rate (%)": 94.0,
+    "Miss Rate (%)": 6.0,
+    "Evictions": 10,
+    "Capacity Misses": 0,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 0.6742,
+    "Wall Clock (s)": 0.0008
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -604,7 +796,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.171,
+    "Avg Decision (us)": 0.1714,
     "Wall Clock (s)": 0.0005
   },
   {
@@ -620,7 +812,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.26680000000000004,
+    "Avg Decision (us)": 0.2712,
     "Wall Clock (s)": 0.0008
   },
   {
@@ -636,8 +828,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 40,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.7962,
-    "Wall Clock (s)": 0.0012
+    "Avg Decision (us)": 0.9304,
+    "Wall Clock (s)": 0.0014
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -652,8 +844,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 60,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 3.5416,
-    "Wall Clock (s)": 0.0033
+    "Avg Decision (us)": 3.5538000000000003,
+    "Wall Clock (s)": 0.0034
   },
   {
     "Workload": "Looping (Hot Set)",
@@ -668,8 +860,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.276,
-    "Wall Clock (s)": 0.0006
+    "Avg Decision (us)": 0.31560000000000005,
+    "Wall Clock (s)": 0.0007
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -684,7 +876,7 @@
     "Capacity Misses": 651,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9156,
+    "Avg Decision (us)": 0.8982,
     "Wall Clock (s)": 0.0023
   },
   {
@@ -700,8 +892,40 @@
     "Capacity Misses": 546,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.0012,
-    "Wall Clock (s)": 0.0023
+    "Avg Decision (us)": 0.9579,
+    "Wall Clock (s)": 0.0022
+  },
+  {
+    "Workload": "Zipf Skew (alpha=1.0)",
+    "Capacity": 5,
+    "Policy": "Redis LRU",
+    "Requests": 1000,
+    "Hits": 251,
+    "Misses": 749,
+    "Hit Rate (%)": 25.1,
+    "Miss Rate (%)": 74.9,
+    "Evictions": 744,
+    "Capacity Misses": 651,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 4.335100000000001,
+    "Wall Clock (s)": 0.0056
+  },
+  {
+    "Workload": "Zipf Skew (alpha=1.0)",
+    "Capacity": 5,
+    "Policy": "Redis LFU",
+    "Requests": 1000,
+    "Hits": 330,
+    "Misses": 670,
+    "Hit Rate (%)": 33.0,
+    "Miss Rate (%)": 67.0,
+    "Evictions": 665,
+    "Capacity Misses": 572,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 5.042800000000001,
+    "Wall Clock (s)": 0.0063
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -716,7 +940,7 @@
     "Capacity Misses": 556,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.784,
+    "Avg Decision (us)": 0.7673,
     "Wall Clock (s)": 0.0019
   },
   {
@@ -732,7 +956,7 @@
     "Capacity Misses": 566,
     "Metadata Entries": 12,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.4234,
+    "Avg Decision (us)": 1.4376,
     "Wall Clock (s)": 0.003
   },
   {
@@ -748,8 +972,8 @@
     "Capacity Misses": 601,
     "Metadata Entries": 13,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.396,
-    "Wall Clock (s)": 0.0043
+    "Avg Decision (us)": 2.4624,
+    "Wall Clock (s)": 0.0045
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -764,8 +988,8 @@
     "Capacity Misses": 520,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 9.444700000000001,
-    "Wall Clock (s)": 0.0137
+    "Avg Decision (us)": 9.973,
+    "Wall Clock (s)": 0.0145
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -780,8 +1004,8 @@
     "Capacity Misses": 437,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.8054,
-    "Wall Clock (s)": 0.0019
+    "Avg Decision (us)": 0.7925,
+    "Wall Clock (s)": 0.0018
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -796,8 +1020,8 @@
     "Capacity Misses": 503,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9173,
-    "Wall Clock (s)": 0.0023
+    "Avg Decision (us)": 1.3615,
+    "Wall Clock (s)": 0.0037
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -812,8 +1036,40 @@
     "Capacity Misses": 406,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.0380999999999998,
+    "Avg Decision (us)": 1.0277,
     "Wall Clock (s)": 0.0024
+  },
+  {
+    "Workload": "Zipf Skew (alpha=1.0)",
+    "Capacity": 10,
+    "Policy": "Redis LRU",
+    "Requests": 1000,
+    "Hits": 401,
+    "Misses": 599,
+    "Hit Rate (%)": 40.1,
+    "Miss Rate (%)": 59.9,
+    "Evictions": 589,
+    "Capacity Misses": 501,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 4.8818,
+    "Wall Clock (s)": 0.0062
+  },
+  {
+    "Workload": "Zipf Skew (alpha=1.0)",
+    "Capacity": 10,
+    "Policy": "Redis LFU",
+    "Requests": 1000,
+    "Hits": 442,
+    "Misses": 558,
+    "Hit Rate (%)": 44.2,
+    "Miss Rate (%)": 55.8,
+    "Evictions": 548,
+    "Capacity Misses": 460,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 5.244800000000001,
+    "Wall Clock (s)": 0.0064
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -828,8 +1084,8 @@
     "Capacity Misses": 420,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.763,
-    "Wall Clock (s)": 0.0019
+    "Avg Decision (us)": 0.7537,
+    "Wall Clock (s)": 0.002
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -844,8 +1100,8 @@
     "Capacity Misses": 455,
     "Metadata Entries": 21,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.4992,
-    "Wall Clock (s)": 0.0032
+    "Avg Decision (us)": 1.4185,
+    "Wall Clock (s)": 0.003
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -860,8 +1116,8 @@
     "Capacity Misses": 480,
     "Metadata Entries": 28,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.4513000000000003,
-    "Wall Clock (s)": 0.0044
+    "Avg Decision (us)": 2.4631999999999996,
+    "Wall Clock (s)": 0.0045
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -876,8 +1132,8 @@
     "Capacity Misses": 385,
     "Metadata Entries": 35,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 10.561399999999999,
-    "Wall Clock (s)": 0.0179
+    "Avg Decision (us)": 9.374,
+    "Wall Clock (s)": 0.0161
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -892,8 +1148,8 @@
     "Capacity Misses": 296,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9065,
-    "Wall Clock (s)": 0.0019
+    "Avg Decision (us)": 0.8177000000000001,
+    "Wall Clock (s)": 0.0018
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -908,8 +1164,8 @@
     "Capacity Misses": 343,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9427000000000001,
-    "Wall Clock (s)": 0.0024
+    "Avg Decision (us)": 0.9656,
+    "Wall Clock (s)": 0.0025
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -924,8 +1180,40 @@
     "Capacity Misses": 269,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.0038,
+    "Avg Decision (us)": 0.9941,
     "Wall Clock (s)": 0.0025
+  },
+  {
+    "Workload": "Zipf Skew (alpha=1.0)",
+    "Capacity": 20,
+    "Policy": "Redis LRU",
+    "Requests": 1000,
+    "Hits": 556,
+    "Misses": 444,
+    "Hit Rate (%)": 55.6,
+    "Miss Rate (%)": 44.4,
+    "Evictions": 424,
+    "Capacity Misses": 346,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 4.413,
+    "Wall Clock (s)": 0.0055
+  },
+  {
+    "Workload": "Zipf Skew (alpha=1.0)",
+    "Capacity": 20,
+    "Policy": "Redis LFU",
+    "Requests": 1000,
+    "Hits": 571,
+    "Misses": 429,
+    "Hit Rate (%)": 57.1,
+    "Miss Rate (%)": 42.9,
+    "Evictions": 409,
+    "Capacity Misses": 331,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 5.123399999999999,
+    "Wall Clock (s)": 0.0063
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -940,8 +1228,8 @@
     "Capacity Misses": 265,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.5701,
-    "Wall Clock (s)": 0.0016
+    "Avg Decision (us)": 0.5705,
+    "Wall Clock (s)": 0.0015
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -956,8 +1244,8 @@
     "Capacity Misses": 305,
     "Metadata Entries": 40,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.2715999999999998,
-    "Wall Clock (s)": 0.0028
+    "Avg Decision (us)": 1.2940999999999998,
+    "Wall Clock (s)": 0.0029
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -972,8 +1260,8 @@
     "Capacity Misses": 307,
     "Metadata Entries": 45,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.2491,
-    "Wall Clock (s)": 0.0041
+    "Avg Decision (us)": 2.1576,
+    "Wall Clock (s)": 0.004
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -988,8 +1276,8 @@
     "Capacity Misses": 261,
     "Metadata Entries": 66,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 10.8773,
-    "Wall Clock (s)": 0.0152
+    "Avg Decision (us)": 10.242799999999999,
+    "Wall Clock (s)": 0.0142
   },
   {
     "Workload": "Zipf Skew (alpha=1.0)",
@@ -1004,8 +1292,8 @@
     "Capacity Misses": 165,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9081,
-    "Wall Clock (s)": 0.0018
+    "Avg Decision (us)": 0.9203,
+    "Wall Clock (s)": 0.0019
   },
   {
     "Workload": "Mixed Workload",
@@ -1020,8 +1308,8 @@
     "Capacity Misses": 377,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.1947,
-    "Wall Clock (s)": 0.0028
+    "Avg Decision (us)": 1.0786,
+    "Wall Clock (s)": 0.0025
   },
   {
     "Workload": "Mixed Workload",
@@ -1036,8 +1324,40 @@
     "Capacity Misses": 299,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.9397,
-    "Wall Clock (s)": 0.0044
+    "Avg Decision (us)": 1.1056,
+    "Wall Clock (s)": 0.0024
+  },
+  {
+    "Workload": "Mixed Workload",
+    "Capacity": 5,
+    "Policy": "Redis LRU",
+    "Requests": 1000,
+    "Hits": 87,
+    "Misses": 913,
+    "Hit Rate (%)": 8.7,
+    "Miss Rate (%)": 91.3,
+    "Evictions": 908,
+    "Capacity Misses": 377,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 5.7831,
+    "Wall Clock (s)": 0.0072
+  },
+  {
+    "Workload": "Mixed Workload",
+    "Capacity": 5,
+    "Policy": "Redis LFU",
+    "Requests": 1000,
+    "Hits": 129,
+    "Misses": 871,
+    "Hit Rate (%)": 12.9,
+    "Miss Rate (%)": 87.1,
+    "Evictions": 866,
+    "Capacity Misses": 335,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 7.072100000000001,
+    "Wall Clock (s)": 0.0086
   },
   {
     "Workload": "Mixed Workload",
@@ -1052,8 +1372,8 @@
     "Capacity Misses": 321,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.5552000000000001,
-    "Wall Clock (s)": 0.0035
+    "Avg Decision (us)": 0.9875,
+    "Wall Clock (s)": 0.0022
   },
   {
     "Workload": "Mixed Workload",
@@ -1068,8 +1388,8 @@
     "Capacity Misses": 323,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.9661,
-    "Wall Clock (s)": 0.0061
+    "Avg Decision (us)": 1.8127,
+    "Wall Clock (s)": 0.0035
   },
   {
     "Workload": "Mixed Workload",
@@ -1084,8 +1404,8 @@
     "Capacity Misses": 376,
     "Metadata Entries": 15,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 4.6923,
-    "Wall Clock (s)": 0.0082
+    "Avg Decision (us)": 3.1719,
+    "Wall Clock (s)": 0.0054
   },
   {
     "Workload": "Mixed Workload",
@@ -1100,8 +1420,8 @@
     "Capacity Misses": 301,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 14.6361,
-    "Wall Clock (s)": 0.0224
+    "Avg Decision (us)": 12.0012,
+    "Wall Clock (s)": 0.0182
   },
   {
     "Workload": "Mixed Workload",
@@ -1116,8 +1436,8 @@
     "Capacity Misses": 203,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.8725,
-    "Wall Clock (s)": 0.0021
+    "Avg Decision (us)": 0.8459,
+    "Wall Clock (s)": 0.002
   },
   {
     "Workload": "Mixed Workload",
@@ -1132,8 +1452,8 @@
     "Capacity Misses": 314,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.1890999999999998,
-    "Wall Clock (s)": 0.0027
+    "Avg Decision (us)": 1.3000999999999998,
+    "Wall Clock (s)": 0.003
   },
   {
     "Workload": "Mixed Workload",
@@ -1148,8 +1468,40 @@
     "Capacity Misses": 182,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.1391,
-    "Wall Clock (s)": 0.0026
+    "Avg Decision (us)": 1.0927,
+    "Wall Clock (s)": 0.0025
+  },
+  {
+    "Workload": "Mixed Workload",
+    "Capacity": 10,
+    "Policy": "Redis LRU",
+    "Requests": 1000,
+    "Hits": 153,
+    "Misses": 847,
+    "Hit Rate (%)": 15.3,
+    "Miss Rate (%)": 84.7,
+    "Evictions": 837,
+    "Capacity Misses": 311,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 7.0525,
+    "Wall Clock (s)": 0.0085
+  },
+  {
+    "Workload": "Mixed Workload",
+    "Capacity": 10,
+    "Policy": "Redis LFU",
+    "Requests": 1000,
+    "Hits": 182,
+    "Misses": 818,
+    "Hit Rate (%)": 18.2,
+    "Miss Rate (%)": 81.8,
+    "Evictions": 808,
+    "Capacity Misses": 282,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 9.8713,
+    "Wall Clock (s)": 0.0116
   },
   {
     "Workload": "Mixed Workload",
@@ -1164,8 +1516,8 @@
     "Capacity Misses": 208,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.4614,
-    "Wall Clock (s)": 0.0032
+    "Avg Decision (us)": 0.8924,
+    "Wall Clock (s)": 0.002
   },
   {
     "Workload": "Mixed Workload",
@@ -1180,8 +1532,8 @@
     "Capacity Misses": 173,
     "Metadata Entries": 22,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.6706999999999996,
-    "Wall Clock (s)": 0.0056
+    "Avg Decision (us)": 1.821,
+    "Wall Clock (s)": 0.0036
   },
   {
     "Workload": "Mixed Workload",
@@ -1196,8 +1548,8 @@
     "Capacity Misses": 305,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 3.531,
-    "Wall Clock (s)": 0.0058
+    "Avg Decision (us)": 3.6206,
+    "Wall Clock (s)": 0.0061
   },
   {
     "Workload": "Mixed Workload",
@@ -1212,8 +1564,8 @@
     "Capacity Misses": 157,
     "Metadata Entries": 40,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 14.1155,
-    "Wall Clock (s)": 0.0233
+    "Avg Decision (us)": 12.8134,
+    "Wall Clock (s)": 0.0206
   },
   {
     "Workload": "Mixed Workload",
@@ -1228,8 +1580,8 @@
     "Capacity Misses": 85,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.0466,
-    "Wall Clock (s)": 0.0021
+    "Avg Decision (us)": 1.1776,
+    "Wall Clock (s)": 0.0024
   },
   {
     "Workload": "Mixed Workload",
@@ -1244,8 +1596,8 @@
     "Capacity Misses": 232,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.7681,
-    "Wall Clock (s)": 0.0037
+    "Avg Decision (us)": 1.6217000000000001,
+    "Wall Clock (s)": 0.0034
   },
   {
     "Workload": "Mixed Workload",
@@ -1260,8 +1612,40 @@
     "Capacity Misses": 47,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.2314,
+    "Avg Decision (us)": 1.258,
     "Wall Clock (s)": 0.0028
+  },
+  {
+    "Workload": "Mixed Workload",
+    "Capacity": 20,
+    "Policy": "Redis LRU",
+    "Requests": 1000,
+    "Hits": 229,
+    "Misses": 771,
+    "Hit Rate (%)": 22.9,
+    "Miss Rate (%)": 77.1,
+    "Evictions": 751,
+    "Capacity Misses": 235,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 9.264100000000001,
+    "Wall Clock (s)": 0.0108
+  },
+  {
+    "Workload": "Mixed Workload",
+    "Capacity": 20,
+    "Policy": "Redis LFU",
+    "Requests": 1000,
+    "Hits": 251,
+    "Misses": 749,
+    "Hit Rate (%)": 25.1,
+    "Miss Rate (%)": 74.9,
+    "Evictions": 729,
+    "Capacity Misses": 213,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 9.6701,
+    "Wall Clock (s)": 0.0111
   },
   {
     "Workload": "Mixed Workload",
@@ -1276,8 +1660,8 @@
     "Capacity Misses": 47,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.0554000000000001,
-    "Wall Clock (s)": 0.0025
+    "Avg Decision (us)": 0.8085,
+    "Wall Clock (s)": 0.0019
   },
   {
     "Workload": "Mixed Workload",
@@ -1292,8 +1676,8 @@
     "Capacity Misses": 43,
     "Metadata Entries": 39,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.9935,
-    "Wall Clock (s)": 0.0039
+    "Avg Decision (us)": 1.6391,
+    "Wall Clock (s)": 0.0032
   },
   {
     "Workload": "Mixed Workload",
@@ -1308,8 +1692,8 @@
     "Capacity Misses": 132,
     "Metadata Entries": 55,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 3.3881,
-    "Wall Clock (s)": 0.0056
+    "Avg Decision (us)": 3.1462,
+    "Wall Clock (s)": 0.0052
   },
   {
     "Workload": "Mixed Workload",
@@ -1324,8 +1708,8 @@
     "Capacity Misses": 50,
     "Metadata Entries": 65,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 17.8123,
-    "Wall Clock (s)": 0.0229
+    "Avg Decision (us)": 15.6056,
+    "Wall Clock (s)": 0.02
   },
   {
     "Workload": "Mixed Workload",
@@ -1340,8 +1724,8 @@
     "Capacity Misses": 11,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.5857,
-    "Wall Clock (s)": 0.0029
+    "Avg Decision (us)": 1.5433,
+    "Wall Clock (s)": 0.0026
   },
   {
     "Workload": "Sequential Scan",
@@ -1356,7 +1740,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.9552,
+    "Avg Decision (us)": 0.9813999999999999,
     "Wall Clock (s)": 0.0012
   },
   {
@@ -1372,8 +1756,40 @@
     "Capacity Misses": 0,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.0796,
-    "Wall Clock (s)": 0.0012
+    "Avg Decision (us)": 1.237,
+    "Wall Clock (s)": 0.0013
+  },
+  {
+    "Workload": "Sequential Scan",
+    "Capacity": 5,
+    "Policy": "Redis LRU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 495,
+    "Capacity Misses": 0,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 5.3848,
+    "Wall Clock (s)": 0.0033
+  },
+  {
+    "Workload": "Sequential Scan",
+    "Capacity": 5,
+    "Policy": "Redis LFU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 495,
+    "Capacity Misses": 0,
+    "Metadata Entries": 5,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 6.7614,
+    "Wall Clock (s)": 0.004
   },
   {
     "Workload": "Sequential Scan",
@@ -1388,8 +1804,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.4587999999999999,
-    "Wall Clock (s)": 0.0015
+    "Avg Decision (us)": 1.0686,
+    "Wall Clock (s)": 0.0011
   },
   {
     "Workload": "Sequential Scan",
@@ -1404,8 +1820,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.8284000000000002,
-    "Wall Clock (s)": 0.0028
+    "Avg Decision (us)": 1.82,
+    "Wall Clock (s)": 0.0017
   },
   {
     "Workload": "Sequential Scan",
@@ -1420,8 +1836,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 15,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 4.318,
-    "Wall Clock (s)": 0.0037
+    "Avg Decision (us)": 3.0242,
+    "Wall Clock (s)": 0.0027
   },
   {
     "Workload": "Sequential Scan",
@@ -1436,8 +1852,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 25,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 13.661,
-    "Wall Clock (s)": 0.0097
+    "Avg Decision (us)": 11.326,
+    "Wall Clock (s)": 0.008
   },
   {
     "Workload": "Sequential Scan",
@@ -1452,8 +1868,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 5,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.5388,
-    "Wall Clock (s)": 0.0008
+    "Avg Decision (us)": 0.5696,
+    "Wall Clock (s)": 0.0009
   },
   {
     "Workload": "Sequential Scan",
@@ -1468,7 +1884,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.2264000000000002,
+    "Avg Decision (us)": 1.2315999999999998,
     "Wall Clock (s)": 0.0014
   },
   {
@@ -1484,8 +1900,40 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.0202,
-    "Wall Clock (s)": 0.0021
+    "Avg Decision (us)": 1.4484000000000001,
+    "Wall Clock (s)": 0.0015
+  },
+  {
+    "Workload": "Sequential Scan",
+    "Capacity": 10,
+    "Policy": "Redis LRU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 490,
+    "Capacity Misses": 0,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 7.0288,
+    "Wall Clock (s)": 0.0042
+  },
+  {
+    "Workload": "Sequential Scan",
+    "Capacity": 10,
+    "Policy": "Redis LFU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 490,
+    "Capacity Misses": 0,
+    "Metadata Entries": 10,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 8.4792,
+    "Wall Clock (s)": 0.0049
   },
   {
     "Workload": "Sequential Scan",
@@ -1500,8 +1948,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.5686,
-    "Wall Clock (s)": 0.0016
+    "Avg Decision (us)": 1.0992,
+    "Wall Clock (s)": 0.0011
   },
   {
     "Workload": "Sequential Scan",
@@ -1516,8 +1964,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 2.031,
-    "Wall Clock (s)": 0.0019
+    "Avg Decision (us)": 2.0324,
+    "Wall Clock (s)": 0.0018
   },
   {
     "Workload": "Sequential Scan",
@@ -1532,8 +1980,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 3.9958,
-    "Wall Clock (s)": 0.0033
+    "Avg Decision (us)": 3.1412,
+    "Wall Clock (s)": 0.0026
   },
   {
     "Workload": "Sequential Scan",
@@ -1548,8 +1996,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 30,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 20.5556,
-    "Wall Clock (s)": 0.0135
+    "Avg Decision (us)": 12.7832,
+    "Wall Clock (s)": 0.0084
   },
   {
     "Workload": "Sequential Scan",
@@ -1564,7 +2012,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 10,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 0.621,
+    "Avg Decision (us)": 0.6334,
     "Wall Clock (s)": 0.0009
   },
   {
@@ -1580,7 +2028,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.5737999999999999,
+    "Avg Decision (us)": 1.621,
     "Wall Clock (s)": 0.0016
   },
   {
@@ -1596,8 +2044,40 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.8406,
+    "Avg Decision (us)": 1.7658,
     "Wall Clock (s)": 0.0018
+  },
+  {
+    "Workload": "Sequential Scan",
+    "Capacity": 20,
+    "Policy": "Redis LRU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 480,
+    "Capacity Misses": 0,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 9.0852,
+    "Wall Clock (s)": 0.0052
+  },
+  {
+    "Workload": "Sequential Scan",
+    "Capacity": 20,
+    "Policy": "Redis LFU",
+    "Requests": 500,
+    "Hits": 0,
+    "Misses": 500,
+    "Hit Rate (%)": 0.0,
+    "Miss Rate (%)": 100.0,
+    "Evictions": 480,
+    "Capacity Misses": 0,
+    "Metadata Entries": 20,
+    "Adapt Penalty Misses": null,
+    "Avg Decision (us)": 10.9122,
+    "Wall Clock (s)": 0.0061
   },
   {
     "Workload": "Sequential Scan",
@@ -1612,8 +2092,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.7872000000000001,
-    "Wall Clock (s)": 0.0018
+    "Avg Decision (us)": 1.1876,
+    "Wall Clock (s)": 0.0012
   },
   {
     "Workload": "Sequential Scan",
@@ -1628,8 +2108,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 40,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 4.0642,
-    "Wall Clock (s)": 0.0034
+    "Avg Decision (us)": 2.4572,
+    "Wall Clock (s)": 0.0021
   },
   {
     "Workload": "Sequential Scan",
@@ -1644,8 +2124,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 60,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 4.812399999999999,
-    "Wall Clock (s)": 0.0037
+    "Avg Decision (us)": 3.6795999999999998,
+    "Wall Clock (s)": 0.0028
   },
   {
     "Workload": "Sequential Scan",
@@ -1660,8 +2140,8 @@
     "Capacity Misses": 0,
     "Metadata Entries": 60,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 24.3218,
-    "Wall Clock (s)": 0.0153
+    "Avg Decision (us)": 19.3692,
+    "Wall Clock (s)": 0.0117
   },
   {
     "Workload": "Sequential Scan",
@@ -1676,7 +2156,7 @@
     "Capacity Misses": 0,
     "Metadata Entries": 20,
     "Adapt Penalty Misses": null,
-    "Avg Decision (us)": 1.481,
-    "Wall Clock (s)": 0.0018
+    "Avg Decision (us)": 1.3545999999999998,
+    "Wall Clock (s)": 0.0017
   }
 ]

@@ -13,6 +13,8 @@ from policies import (
     ARCPolicy,
     SIEVEPolicy,
     ClassicLeCaRPolicy,
+    RedisSampledLRUPolicy,
+    RedisSampledLFUPolicy,
 )
 from workloads.generators import (
     generate_looping_trace,
@@ -58,6 +60,8 @@ def run_benchmark_suite(output_dir: str = "results", seed: int = 42) -> pd.DataF
             policies = [
                 LRUPolicy(),
                 LFUPolicy(),
+                RedisSampledLRUPolicy(samples=5, seed=seed, name="Redis LRU"),
+                RedisSampledLFUPolicy(samples=5, seed=seed, name="Redis LFU"),
                 SIEVEPolicy(capacity=cap),
                 ARCPolicy(capacity=cap),
                 ClassicLeCaRPolicy(capacity=cap, seed=seed),
