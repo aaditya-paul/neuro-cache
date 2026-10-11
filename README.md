@@ -21,7 +21,7 @@ SMART AI is an adaptive, online-learning cache replacement prototype. Instead of
   - Classic LeCaR (Nguyen et al., HotStorage '18) for baseline regret attribution.
   - Adaptive Replacement Cache (ARC - Megiddo & Modha, FAST '03) with dynamically sized recency and frequency lists.
   - SIEVE (Zhang et al., NSDI '24) ultra-fast $O(1)$ single-bit eviction with zero ghost cache.
-- **Strengthened NeuroCache Core**:
+- **Strengthened SMARTCACHE AI Core**:
   - Workload-shift detection via sliding-window hit-rate drop triggers.
   - Single-miss damping to prevent catastrophic weight oscillation.
   - Audited ghost-cache attribution: consensus neutrality, cache-hit purging, mutual exclusivity, and temporal TTL expiration.
@@ -47,7 +47,7 @@ neuro-cache/
 │   ├── classic_lecar.py        # Classic LeCaR (HotStorage '18)
 │   ├── arc.py                  # Adaptive Replacement Cache (FAST '03)
 │   ├── sieve.py                # Modern SIEVE cache (NSDI '24)
-│   └── adaptive.py             # Strengthened NeuroCache online policy
+│   └── adaptive.py             # Strengthened SMARTCACHE AI online policy
 ├── workloads/
 │   ├── __init__.py
 │   ├── generators.py           # Synthetic trace generators
@@ -97,7 +97,7 @@ uv pip install -r requirements.txt --python .venv\Scripts\python.exe
 
 ---
 
-## 🧪 Running Automated Tests
+## 🧪 RUNNING AUTONOMOUS TEST
 Run the complete unit and integration test suite:
 ```powershell
 .venv\Scripts\pytest.exe -v tests/
@@ -107,12 +107,12 @@ All **40 unit and integration tests** cover:
 - LRU recency tracking and LFU frequency bucketing
 - Belady future-use oracle guarantees
 - Classic LeCaR, ARC, and SIEVE compliance
-- NeuroCache trained config loading, scan-resistant probation filtering, effective decayed utility protection, single-miss damping, shift detection, measurable policy switching, consensus neutrality, and ghost TTL expiration.
+- SmartCache AI trained config loading, scan-resistant probation filtering, effective decayed utility protection, single-miss damping, shift detection, measurable policy switching, consensus neutrality, and ghost TTL expiration.
 
 ---
 
-## 🏋️ Training NeuroCache (Offline Meta-Optimization)
-To train NeuroCache's decay memory horizons ($\tau = C \cdot \text{halflife\_mult}$) and frequency saturation caps ($F_{\max}$) across diverse workload distributions (Zipfian skews, scan bursts, phase shifts, and loops):
+## 🏋️ Training SMARTCACHE AI (Offline Meta-Optimization)
+To train SMARTCACHE AI's decay memory horizons ($\tau = C \cdot \text{halflife\_mult}$) and frequency saturation caps ($F_{\max}$) across diverse workload distributions (Zipfian skews, scan bursts, phase shifts, and loops):
 ```powershell
 .venv\Scripts\python.exe train.py --epochs 10 --trials 5
 ```
@@ -121,7 +121,7 @@ Trained parameters are serialized to `models/trained_config.json` and automatica
 ---
 
 ## 📊 Running the Multi-Policy Benchmarks
-To execute the automated benchmark suite comparing all 7 policies (LRU, LFU, Belady, Classic LeCaR, ARC, SIEVE, and NeuroCache) across all workloads and capacities:
+To execute the automated benchmark suite comparing all 7 policies (LRU, LFU, Belady, Classic LeCaR, ARC, SIEVE, and SmartCache AI) across all workloads and capacities:
 ```powershell
 .venv\Scripts\python.exe -m benchmarks.run_benchmarks
 ```
@@ -136,7 +136,7 @@ In real-world production systems, Redis is the industry standard in-memory cache
 - **Redis Sampled LRU (`allkeys-lru`)**: Samples $N=5$ keys into an eviction pool of size 16 sorted by idle time.
 - **Redis Sampled LFU (`allkeys-lfu`)**: Tracks an 8-bit Morris logarithmic counter with LDT time decay.
 
-NeuroCache provides a dedicated, high-fidelity Redis benchmark suite running on realistic production traces:
+SMARTCACHE AI provides a dedicated, high-fidelity Redis benchmark suite running on realistic production traces:
 - **🛒 E-Commerce Flash Sale & Catalog**: Heavy Zipfian product catalog reads (`product:xxxx`) + active session churn (`session:user_xxx`) + sudden flash sale surge.
 - **🛡️ Batch Scan Attack (Cache Pollution)**: Core working set interrupted by background ETL/reporting crawler scans (`batch:scan:export_xxxx`).
 - **🌐 API Gateway & Session Cache**: Microservice route caching + user profiles + auth tokens.
@@ -166,7 +166,7 @@ Open your browser at `http://localhost:8501`.
 
 ### Dashboard Features:
 1. **Live Simulator & Telemetry**: Configure capacity, workloads (including Redis production traces), and watch real-time rolling hit rates, cache chips, and adaptive weights.
-2. **🔴 Redis vs NeuroCache (Live Benchmark)**: Direct side-by-side head-to-head comparison against Redis Sampled LRU and LFU on live production traces, featuring rolling hit-rate timelines, scan pollution analysis, and real Redis key chip breakdown.
+2. **🔴 Redis vs SmartCache AI (Live Benchmark)**: Direct side-by-side head-to-head comparison against Redis Sampled LRU and LFU on live production traces, featuring rolling hit-rate timelines, scan pollution analysis, and real Redis key chip breakdown.
 3. **Workload-Shift Demo**: Observe the exact moment access patterns change (Hot Set $\to$ Scan $\to$ Hot Set B) and see SmartCache dynamically re-weight recency vs frequency.
 4. **Multi-Policy Benchmark Matrix**: Grouped bar charts, penalty comparisons, and pivot tables across all 9 policies (including Redis LRU and Redis LFU).
 5. **Theory & Architecture**: Mathematical walkthrough of online learning, regret attribution, and comparisons with Redis, ARC, and SIEVE.
@@ -181,7 +181,7 @@ For deep technical questions, see the dedicated documentation files:
 ---
 
 ## ⚖️ Scientific Integrity & Competitive Benchmarking Summary
-- **Zipf Skew ($C=5, 10$)**: NeuroCache takes **1st Place** among all online replacement policies (**38.80%** at $C=5$ vs LFU 35.60%, SIEVE 34.60%, ARC 33.60%; and **52.60%** at $C=10$ vs LFU 49.60%, SIEVE 48.20%, ARC 44.70%).
-- **Mixed Workload ($C=20$)**: NeuroCache reaches **41.30%** hit rate (up from 31.10%), effectively matching ARC (**42.10%**), SIEVE (**41.70%**), and LFU (**41.70%**), while outperforming LRU (**23.20%**) by +18.1%.
-- **Phase Shift Recovery ($C=5$)**: NeuroCache incurs only **41 extra misses** during recovery, achieving the lowest adaptation penalty of all evaluated policies (ARC incurs 50, LFU incurs 82).
+- **Zipf Skew ($C=5, 10$)**: SmartCache AI takes **1st Place** among all online replacement policies (**38.80%** at $C=5$ vs LFU 35.60%, SIEVE 34.60%, ARC 33.60%; and **52.60%** at $C=10$ vs LFU 49.60%, SIEVE 48.20%, ARC 44.70%).
+- **Mixed Workload ($C=20$)**: SmartCache AI reaches **41.30%** hit rate (up from 31.10%), effectively matching ARC (**42.10%**), SIEVE (**41.70%**), and LFU (**41.70%**), while outperforming LRU (**23.20%**) by +18.1%.
+- **Phase Shift Recovery ($C=5$)**: SmartCache AI incurs only **41 extra misses** during recovery, achieving the lowest adaptation penalty of all evaluated policies (ARC incurs 50, LFU incurs 82).
 - **Looping & Steady States ($C=10, 20$)**: Matches Belady's optimal oracle at **64.44%** and **94.00%**.
