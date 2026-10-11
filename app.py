@@ -417,8 +417,82 @@ def main():
                     else:
                         st.warning(f"Could not reach live Redis: {live_res.get('message')}. Proceeding with high-fidelity simulated Redis C-engine below.")
 
-        run_redis_btn = st.button("🔄 Rerun / Refresh Benchmark", type="primary", use_container_width=True)
-        if True:  # Display immediately on load and upon control changes
+        col_btn1, col_btn2 = st.columns([1.5, 2.5])
+        with col_btn1:
+            run_redis_btn = st.button("🔄 Rerun / Refresh Benchmark", type="primary", use_container_width=True)
+        with col_btn2:
+            live_stream_opt = st.checkbox("📡 Enable Live Animated Request Stream (Watch Hits & Misses Live)", value=False)
+
+        if live_stream_opt:
+            st.markdown("#### ⚡ Real-Time Animated Request Player")
+            st.write("Watch item-by-item as requests arrive: see which algorithm hits, which misses, and which keys get evicted in real-time.")
+            col_sp1, col_sp2, col_sp3 = st.columns([1.5, 1.5, 1])
+            with col_sp1:
+                stream_speed = st.selectbox(
+                    "Animation Speed",
+                    ["Fast (15ms)", "Normal (50ms)", "Step-by-Step (150ms)", "Burst (Batch 10)"],
+                    index=1,
+                    key="anim_spd",
+                )
+            with col_sp2:
+                stream_count = st.slider("Requests to Stream", 30, min(500, redis_trace_len), min(150, redis_trace_len), 10, key="anim_cnt")
+            with col_sp3:
+                start_stream_btn = st.button("▶ Play Live Stream", type="secondary", use_container_width=True)
+
+            if start_stream_btn:
+                stream_trace = get_redis_workload(redis_scenario, total_requests=stream_count, seed=42)
+                sim_live_smart = CacheSimulator(capacity=redis_cap, policy=LeCaRAdaptivePolicy(capacity=redis_cap, seed=42, name="SmartCache AI"), record_events=True)
+                sim_live_redis = CacheSimulator(capacity=redis_cap, policy=RedisSampledLRUPolicy(samples=5, seed=42, name="Redis LRU"), record_events=True)
+                sim_live_lfu = CacheSimulator(capacity=redis_cap, policy=RedisSampledLFUPolicy(samples=5, seed=42, name="Redis LFU"), record_events=True)
+
+                delay = 0.05
+                batch = 1
+                if "15ms" in stream_speed: delay = 0.015
+                elif "150ms" in stream_speed: delay = 0.15
+                elif "Batch 10" in stream_speed: batch = 10; delay = 0.02
+
+                ticker_placeholder = st.empty()
+                kpi_placeholder = st.empty()
+                feed_placeholder = st.empty()
+
+                recent_events = []
+                for idx, key in enumerate(stream_trace):
+                    ev_s = sim_live_smart.step(key, idx)
+                    ev_r = sim_live_redis.step(key, idx)
+                    ev_l = sim_live_lfu.step(key, idx)
+
+                    recent_events.append({
+                        "Req #": idx + 1,
+                        "Key Requested": str(key),
+                        "SmartCache AI": "🟢 HIT" if ev_s.is_hit else f"🔴 MISS (Evicted: {ev_s.evicted_item or 'None'})",
+                        "Redis LRU (5)": "🟢 HIT" if ev_r.is_hit else f"🔴 MISS (Evicted: {ev_r.evicted_item or 'None'})",
+                        "Redis LFU (5)": "🟢 HIT" if ev_l.is_hit else f"🔴 MISS (Evicted: {ev_l.evicted_item or 'None'})",
+                    })
+                    if len(recent_events) > 8:
+                        recent_events.pop(0)
+
+                    if idx % batch == 0 or idx == len(stream_trace) - 1:
+                        hr_s = (sim_live_smart.hits / (idx + 1)) * 100
+                        hr_r = (sim_live_redis.hits / (idx + 1)) * 100
+                        hr_l = (sim_live_lfu.hits / (idx + 1)) * 100
+
+                        ticker_placeholder.info(
+                            f"**Live Request #{idx+1} of {len(stream_trace)}**: `GET {key}`\n\n"
+                            f"• **SmartCache AI**: {'🟢 HIT' if ev_s.is_hit else f'🔴 MISS (Evicted: `{ev_s.evicted_item}`)'}\n"
+                            f"• **Redis LRU (samples=5)**: {'🟢 HIT' if ev_r.is_hit else f'🔴 MISS (Evicted: `{ev_r.evicted_item}`)'}\n"
+                            f"• **Redis LFU (samples=5)**: {'🟢 HIT' if ev_l.is_hit else f'🔴 MISS (Evicted: `{ev_l.evicted_item}`)'}"
+                        )
+
+                        m1, m2, m3, m4 = kpi_placeholder.columns(4)
+                        m1.metric("Current Progress", f"{idx + 1} / {len(stream_trace)}")
+                        m2.metric("SmartCache Hit Rate", f"{hr_s:.1f}%")
+                        m3.metric("Redis LRU Hit Rate", f"{hr_r:.1f}%")
+                        m4.metric("Live Advantage (Δ)", f"{hr_s - hr_r:+.1f}%")
+
+                        feed_placeholder.dataframe(pd.DataFrame(recent_events), use_container_width=True)
+                        time.sleep(delay)
+
+        if True:  # Display full benchmark matrix below
             r_trace = get_redis_workload(redis_scenario, total_requests=redis_trace_len, seed=42)
 
             # Policies to evaluate
@@ -587,6 +661,61 @@ def main():
             ]
             df_sum = pd.DataFrame(summary_records)
             st.dataframe(df_sum.style.highlight_max(axis=0, subset=["Hit Rate (%)"], color="#DCFCE7"), use_container_width=True)
+
+            # Live Request Hit/Miss Forensic Inspector
+            st.divider()
+            st.subheader("🔍 Live Request Hit/Miss Forensic Inspector")
+            st.write("Inspect individual requests step-by-step across the trace to see what hit, what missed, and what got evicted:")
+
+            event_rows = []
+            for idx in range(len(r_trace)):
+                ev_s = res_smart.events[idx]
+                ev_r = res_redis_lru5.events[idx]
+                ev_l = res_redis_lfu.events[idx]
+                key_str = str(r_trace[idx])
+
+                s_status = "🟢 HIT" if ev_s.is_hit else f"🔴 MISS (Evicted: {ev_s.evicted_item or 'None'})"
+                r_status = "🟢 HIT" if ev_r.is_hit else f"🔴 MISS (Evicted: {ev_r.evicted_item or 'None'})"
+                l_status = "🟢 HIT" if ev_l.is_hit else f"🔴 MISS (Evicted: {ev_l.evicted_item or 'None'})"
+
+                is_advantage = ev_s.is_hit and not ev_r.is_hit
+                is_pollution = not ev_r.is_hit and ev_r.evicted_item and ("product" in str(ev_r.evicted_item) or "hot_" in str(ev_r.evicted_item)) and ("scan" in key_str or "export" in key_str)
+
+                event_rows.append({
+                    "Step": idx + 1,
+                    "Requested Key": key_str,
+                    "SmartCache AI": s_status,
+                    "Redis LRU (5)": r_status,
+                    "Redis LFU (5)": l_status,
+                    "Outcome": "🔥 SmartCache Advantage" if is_advantage else ("⚠️ Scan Pollution" if is_pollution else "—"),
+                    "_adv": is_advantage,
+                    "_poll": is_pollution,
+                })
+
+            df_events = pd.DataFrame(event_rows)
+
+            filter_mode = st.radio(
+                "Filter Forensic Feed:",
+                [
+                    "All Requests",
+                    "🔥 SmartCache Hit while Redis Missed (Advantage Events)",
+                    "⚠️ Scan Pollution (Redis Evicted Hot Item for Scan)",
+                    "❌ Missed by Both",
+                ],
+                horizontal=True,
+            )
+
+            if "Advantage Events" in filter_mode:
+                filtered_df = df_events[df_events["_adv"]]
+            elif "Scan Pollution" in filter_mode:
+                filtered_df = df_events[df_events["_poll"]]
+            elif "Missed by Both" in filter_mode:
+                filtered_df = df_events[df_events["SmartCache AI"].str.contains("MISS") & df_events["Redis LRU (5)"].str.contains("MISS")]
+            else:
+                filtered_df = df_events
+
+            st.dataframe(filtered_df.drop(columns=["_adv", "_poll"], errors="ignore").head(150), use_container_width=True)
+            st.caption(f"Displaying {min(150, len(filtered_df))} of {len(filtered_df)} filtered request events.")
 
     # ---------------------------------------------------------
     # TAB 3: Workload-Shift Demo
