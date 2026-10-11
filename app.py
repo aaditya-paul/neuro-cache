@@ -10,7 +10,15 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from cache_simulator import CacheSimulator
-from policies import LRUPolicy, LFUPolicy, BeladyPolicy, LeCaRAdaptivePolicy
+from policies import (
+    LRUPolicy,
+    LFUPolicy,
+    BeladyPolicy,
+    LeCaRAdaptivePolicy,
+    ARCPolicy,
+    SIEVEPolicy,
+    ClassicLeCaRPolicy,
+)
 from workloads.generators import (
     generate_looping_trace,
     generate_sequential_scan_trace,
@@ -129,7 +137,7 @@ def main():
             st.divider()
             policy_name = st.selectbox(
                 "Policy",
-                ["SmartCache (LeCaR)", "LRU", "LFU", "Belady (Optimal)"],
+                ["SmartCache AI", "ARC", "SIEVE", "LeCaR (Classic)", "LRU", "LFU", "Belady (Optimal)"],
             )
 
             # Adaptive Hyperparameters
@@ -138,7 +146,7 @@ def main():
             history_mult = 1.0
             deterministic = False
 
-            if policy_name == "SmartCache (LeCaR)":
+            if policy_name == "SmartCache AI":
                 st.caption("Adaptive Hyperparameters")
                 use_adaptive_lr = st.checkbox("Auto Adaptive Learning Rate", value=True)
                 if not use_adaptive_lr:
@@ -153,7 +161,7 @@ def main():
             trace = get_workload_trace(workload_type, trace_length, seed, uploaded_file)
 
             # Instantiate policy
-            if policy_name == "SmartCache (LeCaR)":
+            if policy_name == "SmartCache AI":
                 policy = LeCaRAdaptivePolicy(
                     capacity=capacity,
                     learning_rate=learning_rate,
@@ -161,7 +169,14 @@ def main():
                     history_multiplier=history_mult,
                     deterministic=deterministic,
                     seed=seed,
+                    name="SmartCache AI",
                 )
+            elif policy_name == "ARC":
+                policy = ARCPolicy(capacity=capacity)
+            elif policy_name == "SIEVE":
+                policy = SIEVEPolicy(capacity=capacity)
+            elif policy_name == "LeCaR (Classic)":
+                policy = ClassicLeCaRPolicy(capacity=capacity, seed=seed)
             elif policy_name == "LRU":
                 policy = LRUPolicy()
             elif policy_name == "LFU":
@@ -199,7 +214,7 @@ def main():
             st.plotly_chart(fig_hr, use_container_width=True)
 
             # If SmartCache, show Adaptive Weight Telemetry
-            if policy_name == "SmartCache (LeCaR)":
+            if policy_name == "SmartCache AI":
                 hist = policy.weight_history
                 df_weights = pd.DataFrame({
                     "Step": [h[0] for h in hist],
@@ -263,23 +278,29 @@ def main():
             ]
             shift_trace = generate_phase_shift_trace(phases=custom_phases, seed=42)
 
-            # Run LRU, LFU, SmartCache, Belady on identical trace
+            # Run Competitors on identical trace
             pol_lru = LRUPolicy()
             pol_lfu = LFUPolicy()
-            pol_smart = LeCaRAdaptivePolicy(capacity=shift_cap, seed=42)
+            pol_arc = ARCPolicy(capacity=shift_cap)
+            pol_sieve = SIEVEPolicy(capacity=shift_cap)
+            pol_smart = LeCaRAdaptivePolicy(capacity=shift_cap, seed=42, name="SmartCache AI")
             pol_belady = BeladyPolicy(trace=shift_trace)
 
             res_lru = CacheSimulator(capacity=shift_cap, policy=pol_lru).run(shift_trace)
             res_lfu = CacheSimulator(capacity=shift_cap, policy=pol_lfu).run(shift_trace)
+            res_arc = CacheSimulator(capacity=shift_cap, policy=pol_arc).run(shift_trace)
+            res_sieve = CacheSimulator(capacity=shift_cap, policy=pol_sieve).run(shift_trace)
             res_smart = CacheSimulator(capacity=shift_cap, policy=pol_smart).run(shift_trace)
             res_belady = CacheSimulator(capacity=shift_cap, policy=pol_belady).run(shift_trace)
 
             # Summary Cards
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric("LRU Hit Rate", f"{res_lru.hit_rate * 100:.2f}%")
-            c2.metric("LFU Hit Rate", f"{res_lfu.hit_rate * 100:.2f}%")
-            c3.metric("SmartCache Hit Rate", f"{res_smart.hit_rate * 100:.2f}%", delta=f"{(res_smart.hit_rate - res_lfu.hit_rate)*100:+.2f}% vs LFU")
-            c4.metric("Belady Oracle (Upper Bound)", f"{res_belady.hit_rate * 100:.2f}%")
+            c1, c2, c3, c4, c5, c6 = st.columns(6)
+            c1.metric("LRU", f"{res_lru.hit_rate * 100:.2f}%")
+            c2.metric("LFU", f"{res_lfu.hit_rate * 100:.2f}%")
+            c3.metric("ARC", f"{res_arc.hit_rate * 100:.2f}%")
+            c4.metric("SIEVE", f"{res_sieve.hit_rate * 100:.2f}%")
+            c5.metric("SmartCache AI", f"{res_smart.hit_rate * 100:.2f}%")
+            c6.metric("Belady Oracle", f"{res_belady.hit_rate * 100:.2f}%")
 
             # Transition Switching Measurement Cards
             t_state = pol_smart.get_state()
@@ -293,21 +314,31 @@ def main():
             window = 40
             hr_lru = calculate_rolling_hit_rate(res_lru.events, window_size=window)
             hr_lfu = calculate_rolling_hit_rate(res_lfu.events, window_size=window)
+            hr_arc = calculate_rolling_hit_rate(res_arc.events, window_size=window)
+            hr_sieve = calculate_rolling_hit_rate(res_sieve.events, window_size=window)
             hr_smart = calculate_rolling_hit_rate(res_smart.events, window_size=window)
 
             df_hr_shift = pd.DataFrame({
                 "Request Step": list(range(len(shift_trace))),
                 "LRU": [v * 100 for v in hr_lru],
                 "LFU": [v * 100 for v in hr_lfu],
-                "SmartCache (LeCaR)": [v * 100 for v in hr_smart],
+                "ARC": [v * 100 for v in hr_arc],
+                "SIEVE": [v * 100 for v in hr_sieve],
+                "SmartCache AI": [v * 100 for v in hr_smart],
             })
 
             fig_shift_hr = px.line(
                 df_hr_shift,
                 x="Request Step",
-                y=["LRU", "LFU", "SmartCache (LeCaR)"],
+                y=["LRU", "LFU", "ARC", "SIEVE", "SmartCache AI"],
                 title=f"Comparative Rolling Hit Rate Across Phase Shift (Window={window})",
-                color_discrete_map={"LRU": "#3B82F6", "LFU": "#EF4444", "SmartCache (LeCaR)": "#10B981"},
+                color_discrete_map={
+                    "LRU": "#3B82F6",
+                    "LFU": "#EF4444",
+                    "ARC": "#8B5CF6",
+                    "SIEVE": "#EC4899",
+                    "SmartCache AI": "#10B981",
+                },
             )
             # Add phase boundary annotations
             fig_shift_hr.add_vline(x=p1_len, line_dash="dash", line_color="gray", annotation_text="Shift to Scan")
@@ -351,8 +382,10 @@ def main():
                 values="Hit Rate (%)",
             ).reset_index()
 
+            avail_online = [p for p in ["LFU", "LRU", "ARC", "SIEVE", "LeCaR (Classic)", "SmartCache AI"] if p in pivot_hr.columns]
+
             st.write("### Measured Hit Rate (%) Comparison")
-            st.dataframe(pivot_hr.style.highlight_max(axis=1, subset=["LFU", "LRU", "SmartCache (LeCaR)"], color="#DCFCE7"), use_container_width=True)
+            st.dataframe(pivot_hr.style.highlight_max(axis=1, subset=avail_online, color="#DCFCE7"), use_container_width=True)
 
             # Grouped Bar Chart
             fig_bar = px.bar(
@@ -367,22 +400,60 @@ def main():
                     "Belady (Optimal)": "#6B7280",
                     "LRU": "#3B82F6",
                     "LFU": "#EF4444",
-                    "SmartCache (LeCaR)": "#10B981",
+                    "ARC": "#8B5CF6",
+                    "SIEVE": "#EC4899",
+                    "LeCaR (Classic)": "#F59E0B",
+                    "SmartCache AI": "#10B981",
                 },
             )
             fig_bar.update_layout(height=450)
             st.plotly_chart(fig_bar, use_container_width=True)
 
-            # Overhead Chart
-            fig_overhead = px.bar(
-                df_bench[df_bench["Capacity"] == 10],
-                x="Policy",
-                y="Avg Decision (us)",
-                color="Policy",
-                title="Average Policy Decision Overhead (Microseconds per Request at Capacity 10)",
-            )
-            fig_overhead.update_layout(height=350)
-            st.plotly_chart(fig_overhead, use_container_width=True)
+            # Adaptation Penalty Chart (Phase Shift)
+            shift_data = df_bench[(df_bench["Workload"] == "Phase Shift (Shift)") & (df_bench["Capacity"] == 5)]
+            if not shift_data.empty and "Adapt Penalty Misses" in shift_data.columns:
+                fig_adapt = px.bar(
+                    shift_data,
+                    x="Policy",
+                    y="Adapt Penalty Misses",
+                    color="Policy",
+                    title="Adaptation Penalty: Extra Misses Incurred During Workload Shift Recovery (Capacity = 5)",
+                    color_discrete_map={
+                        "Belady (Optimal)": "#6B7280",
+                        "LRU": "#3B82F6",
+                        "LFU": "#EF4444",
+                        "ARC": "#8B5CF6",
+                        "SIEVE": "#EC4899",
+                        "LeCaR (Classic)": "#F59E0B",
+                        "SmartCache AI": "#10B981",
+                    },
+                )
+                fig_adapt.update_layout(height=350)
+                st.plotly_chart(fig_adapt, use_container_width=True)
+
+            # Overhead Charts: Latency & Memory Overhead
+            col_ov1, col_ov2 = st.columns(2)
+            with col_ov1:
+                fig_overhead = px.bar(
+                    df_bench[df_bench["Capacity"] == 10],
+                    x="Policy",
+                    y="Avg Decision (us)",
+                    color="Policy",
+                    title="Decision Latency (μs per Request at Capacity 10)",
+                )
+                fig_overhead.update_layout(height=350)
+                st.plotly_chart(fig_overhead, use_container_width=True)
+
+            with col_ov2:
+                fig_mem = px.bar(
+                    df_bench[df_bench["Capacity"] == 10],
+                    x="Policy",
+                    y="Metadata Entries",
+                    color="Policy",
+                    title="Metadata Memory Overhead (Tracked Entries at Capacity 10)",
+                )
+                fig_mem.update_layout(height=350)
+                st.plotly_chart(fig_mem, use_container_width=True)
 
             # Download CSV
             with open(bench_csv, "rb") as f:

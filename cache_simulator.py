@@ -91,6 +91,7 @@ class CacheSimulator:
             "step": step_idx,
             "capacity": self.capacity,
             "current_cache_size": len(self.cache),
+            "requested_item": item,
         }
 
         if item in self.cache:

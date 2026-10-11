@@ -84,7 +84,37 @@ class ARCPolicy(BasePolicy):
 
     def on_miss(self, item: Any, evicted_item: Optional[Any], context: Optional[Dict[str, Any]] = None) -> None:
         """Handle cache miss: update p, maintain ghost queues, and insert new item."""
-        # 1. Update victim in ghost cache
+        target_list = "T1"
+
+        # 1. Case B: Item is in B1 (ghost miss in recency history)
+        if item in self.b1:
+            delta1 = 1.0 if len(self.b1) >= len(self.b2) else (len(self.b2) / max(1, len(self.b1)))
+            self.p = min(float(self.capacity), self.p + delta1)
+            del self.b1[item]
+            target_list = "T2"
+
+        # 2. Case C: Item is in B2 (ghost miss in frequency history)
+        elif item in self.b2:
+            delta2 = 1.0 if len(self.b2) >= len(self.b1) else (len(self.b1) / max(1, len(self.b2)))
+            self.p = max(0.0, self.p - delta2)
+            del self.b2[item]
+            target_list = "T2"
+
+        # 3. Case D: Item is completely new (cold miss)
+        else:
+            len_l1 = len(self.t1) + len(self.b1)
+            len_l2 = len(self.t2) + len(self.b2)
+
+            if len_l1 == self.capacity:
+                if len(self.t1) < self.capacity and self.b1:
+                    self.b1.popitem(last=False)
+            elif len_l1 < self.capacity and (len_l1 + len_l2) >= 2 * self.capacity:
+                if self.b2:
+                    self.b2.popitem(last=False)
+
+            target_list = "T1"
+
+        # 4. Handle eviction into ghost cache
         if evicted_item is not None:
             if self.last_victim_from == "T1":
                 self.t1.pop(evicted_item, None)
@@ -93,40 +123,13 @@ class ARCPolicy(BasePolicy):
                 self.t2.pop(evicted_item, None)
                 self.b2[evicted_item] = None
 
-        # 2. Case B: Item is in B1 (ghost miss in recency history)
-        if item in self.b1:
-            delta1 = 1.0 if len(self.b1) >= len(self.b2) else (len(self.b2) / max(1, len(self.b1)))
-            self.p = min(float(self.capacity), self.p + delta1)
-            del self.b1[item]
-            self.t2[item] = None  # Moved to T2 because it is reused
-
-        # 3. Case C: Item is in B2 (ghost miss in frequency history)
-        elif item in self.b2:
-            delta2 = 1.0 if len(self.b2) >= len(self.b1) else (len(self.b1) / max(1, len(self.b2)))
-            self.p = max(0.0, self.p - delta2)
-            del self.b2[item]
-            self.t2[item] = None  # Moved to T2
-
-        # 4. Case D: Item is completely new (cold miss)
+        # 5. Insert new item into chosen list
+        if target_list == "T2":
+            self.t2[item] = None
         else:
-            len_l1 = len(self.t1) + len(self.b1)
-            len_l2 = len(self.t2) + len(self.b2)
-
-            if len_l1 == self.capacity:
-                if len(self.t1) < self.capacity:
-                    if self.b1:
-                        self.b1.popitem(last=False)
-                else:
-                    if self.t1:
-                        self.t1.popitem(last=False)
-            elif len_l1 < self.capacity and (len_l1 + len_l2) >= self.capacity:
-                if (len_l1 + len_l2) >= 2 * self.capacity:
-                    if self.b2:
-                        self.b2.popitem(last=False)
-
             self.t1[item] = None
 
-        # Bounded ghost capacity checks: |L1| + |L2| <= 2*c
+        # 6. Bounded ghost capacity checks: |B1| <= c, |B2| <= c
         while len(self.b1) > self.capacity:
             self.b1.popitem(last=False)
         while len(self.b2) > self.capacity:

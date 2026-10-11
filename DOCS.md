@@ -16,6 +16,9 @@ This document provides a comprehensive, function-by-function reference for the e
    - [LFUPolicy (`policies/lfu.py`)](#13-lfupolicy-policieslfupy)
    - [BeladyPolicy (`policies/belady.py`)](#14-beladypolicy-policiesbeladypy)
    - [LeCaRAdaptivePolicy (`policies/adaptive.py`)](#15-lecaradaptivepolicy-policiesadaptivepy)
+   - [ARCPolicy (`policies/arc.py`)](#16-arcpolicy-policiesarcpy)
+   - [SIEVEPolicy (`policies/sieve.py`)](#17-sievepolicy-policiessievepy)
+   - [ClassicLeCaRPolicy (`policies/classic_lecar.py`)](#18-classiclecarpolicy-policiesclassic_lecarpy)
 2. [Cache Simulation Engine (`cache_simulator.py`)](#2-cache-simulation-engine-cache_simulatorpy)
    - [SimulationEvent & SimulationResult](#21-simulationevent--simulationresult)
    - [CacheSimulator](#22-cachesimulator)
@@ -281,6 +284,68 @@ class LeCaRAdaptivePolicy(BasePolicy):
 #### `LeCaRAdaptivePolicy.get_state()`
 - **Signature**: `get_state(self) -> Dict[str, Any]`
 - **Why It's Used**: Exposes telemetry for dashboard and benchmarking, including: `w_lru`, `w_lfu`, `h_lru_size`, `h_lfu_size`, `ghost_hits_lru`, `ghost_hits_lfu`, `expired_ghost_entries`, `is_shift_active`, `completed_transitions`, `avg_adaptation_latency`, and `total_extra_misses`.
+
+---
+
+### 1.6 `ARCPolicy` (`policies/arc.py`)
+Implementation of IBM's Adaptive Replacement Cache (Megiddo & Modha, FAST '03).
+
+```python
+class ARCPolicy(BasePolicy):
+    def __init__(self, capacity: int = 10, name: str = "ARC") -> None
+```
+- **Internal Data Structures**:
+  - `t1`: Top list of $L_1$ (in-cache pages accessed once recently).
+  - `b1`: Bottom list of $L_1$ (ghost cache of $T_1$ evictions).
+  - `t2`: Top list of $L_2$ (in-cache pages accessed $\ge 2$ times recently).
+  - `b2`: Bottom list of $L_2$ (ghost cache of $T_2$ evictions).
+  - `p`: Target partition size between recency ($T_1$) and frequency ($T_2$).
+
+#### `ARCPolicy.choose_victim(cache_items, context)`
+- **Why It's Used**: Selects a victim from either $T_1$ or $T_2$ depending on current target size $p$ and ghost cache state.
+- **How It Works**: Evaluates whether $|T_1| > p$ or ($x \in B_2$ and $|T_1| == p$). If so, evicts from $T_1$; otherwise evicts from $T_2$.
+
+#### `ARCPolicy.on_hit(item, context)`
+- **Why It's Used**: Moves accessed item to the most-recently-used position of $T_2$ (frequency list).
+
+#### `ARCPolicy.on_miss(item, evicted_item, context)`
+- **Why It's Used**: Handles ghost adaptation and insertion.
+- **How It Works**: If $x \in B_1$, expands recency target $p \leftarrow \min(c, p + \delta_1)$. If $x \in B_2$, contracts recency target $p \leftarrow \max(0, p - \delta_2)$. Moves evicted victim to $B_1$ or $B_2$.
+
+---
+
+### 1.7 `SIEVEPolicy` (`policies/sieve.py`)
+Implementation of the SIEVE replacement policy (Zhang et al., NSDI '24).
+
+```python
+class SIEVEPolicy(BasePolicy):
+    def __init__(self, capacity: int = 10, name: str = "SIEVE") -> None
+```
+- **Internal Data Structures**:
+  - Doubly linked list queue with `head` (newest) and `tail` (oldest).
+  - Moving pointer `hand` scanning backwards.
+  - `visited: bool` flag per cached node.
+
+#### `SIEVEPolicy.choose_victim(cache_items, context)`
+- **Why It's Used**: Selects an unvisited victim while giving accessed items a second chance with zero lock contention.
+- **How It Works**: Scans backwards from `hand`. If node has `visited == True`, sets `visited = False` and continues. Evicts the first node with `visited == False`.
+
+#### `SIEVEPolicy.on_hit(item, context)`
+- **Why It's Used**: Sets `node.visited = True` in $O(1)$ time without moving nodes or updating linked list pointers.
+
+#### `SIEVEPolicy.on_miss(item, evicted_item, context)`
+- **Why It's Used**: Removes evicted node and inserts new node at the head with `visited = False`.
+
+---
+
+### 1.8 `ClassicLeCaRPolicy` (`policies/classic_lecar.py`)
+Implementation of the un-augmented LeCaR algorithm (Nguyen et al., HotStorage '18).
+
+```python
+class ClassicLeCaRPolicy(BasePolicy):
+    def __init__(self, capacity: int = 10, learning_rate: float = 0.25, seed: Optional[int] = 42, name: str = "LeCaR (Classic)") -> None
+```
+- **Why It's Used**: Baseline for ablation study; runs the original exponential update rule on every ghost hit without shift detection damping or TTL pruning.
 
 ---
 

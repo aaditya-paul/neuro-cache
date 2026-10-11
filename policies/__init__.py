@@ -4,6 +4,9 @@ from policies.lru import LRUPolicy
 from policies.lfu import LFUPolicy
 from policies.belady import BeladyPolicy
 from policies.adaptive import LeCaRAdaptivePolicy
+from policies.arc import ARCPolicy
+from policies.sieve import SIEVEPolicy
+from policies.classic_lecar import ClassicLeCaRPolicy
 
 __all__ = [
     "BasePolicy",
@@ -11,4 +14,7 @@ __all__ = [
     "LFUPolicy",
     "BeladyPolicy",
     "LeCaRAdaptivePolicy",
+    "ARCPolicy",
+    "SIEVEPolicy",
+    "ClassicLeCaRPolicy",
 ]
