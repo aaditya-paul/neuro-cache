@@ -200,6 +200,9 @@ class LeCaRAdaptivePolicy(BasePolicy):
         learning_rate: Optional[float] = None,
         discount: float = 1.0,
         history_multiplier: float = 1.0,
+        ttl_multiplier: float = 3.0,
+        damping_factor: float = 0.35,
+        shift_threshold: float = 0.20,
         epsilon_min: float = 0.005,
         deterministic: bool = False,
         seed: Optional[int] = 42,
@@ -212,58 +215,72 @@ class LeCaRAdaptivePolicy(BasePolicy):
 - **How It Works**:
   1. Calls `v_lru = self.lru_expert.choose_victim(cache_items)`.
   2. Calls `v_lfu = self.lfu_expert.choose_victim(cache_items)`.
-  3. If $v_{lru} == v_{lfu}$ (consensus): sets `self.last_chosen_expert = "BOTH"` and returns the agreed victim.
+  3. If $v_{lru} == v_{lfu}$ (consensus): sets `self.last_chosen_expert = "CONSENSUS"` and returns the agreed victim.
   4. If $v_{lru} \ne v_{lfu}$ (disagreement):
      - If `deterministic == True`: selects the expert with the higher weight.
      - Else: samples $E \sim \text{Bernoulli}(w_{LRU})$. If random value $< w_{LRU}$, chooses $v_{lru}$ and sets `last_chosen_expert = "LRU"`; otherwise chooses $v_{lfu}$ and sets `last_chosen_expert = "LFU"`.
   5. Returns the chosen victim.
 
 #### `LeCaRAdaptivePolicy.on_hit(item, context)`
-- **Why It's Used**: Maintains state synchronization across both sub-experts and logs telemetry.
+- **Why It's Used**: Maintains state synchronization across both sub-experts, purges active cache items from ghost caches, and tracks baseline hit rates.
 - **How It Works**:
   1. Increments `self.current_step += 1`.
-  2. Calls `lru_expert.on_hit(item)`.
-  3. Calls `lfu_expert.on_hit(item)`.
-  4. Appends `(current_step, w_lru, w_lfu)` to `self.weight_history`.
+  2. Purges `item` from both ghost caches (`h_lru.pop(item, None)`, `h_lfu.pop(item, None)`).
+  3. Updates workload outcome window and baseline hit rate EMA.
+  4. Calls `lru_expert.on_hit(item)` and `lfu_expert.on_hit(item)`.
+  5. Appends `(current_step, w_lru, w_lfu)` to `self.weight_history`.
 
 #### `LeCaRAdaptivePolicy.on_miss(item, evicted_item, context)`
-- **Why It's Used**: Implements **credit assignment**: checks if the requested item was previously evicted by an expert, penalizes that expert, updates weights, and registers the newly evicted item into the ghost cache.
+- **Why It's Used**: Implements **audited credit assignment**, workload-shift detection, and transition measurement.
 - **How It Works**:
-  1. **Ghost Cache Inspection**:
-     - If `item in self.h_lru`: LRU made a bad eviction!
-       $w_{LRU} \leftarrow w_{LRU} \cdot \exp(-\lambda \cdot \gamma^{\Delta t})$.
-       Increments `ghost_hits_lru`.
-     - If `item in self.h_lfu`: LFU made a bad eviction!
-       $w_{LFU} \leftarrow w_{LFU} \cdot \exp(-\lambda \cdot \gamma^{\Delta t})$.
-       Increments `ghost_hits_lfu`.
-  2. If either weight changed, calls `_normalize_weights()`.
-  3. Forwards miss to experts: `lru_expert.on_miss(item, evicted_item)` and `lfu_expert.on_miss(item, evicted_item)`.
-  4. **Ghost Insertion**: If `evicted_item` is not `None`:
-     - If `last_chosen_expert == "LRU"`, adds `evicted_item` to `h_lru`.
-     - If `last_chosen_expert == "LFU"`, adds `evicted_item` to `h_lfu`.
-     - If `last_chosen_expert == "BOTH"`, adds to both ghost caches.
-  5. Records weight snapshot into `weight_history`.
+  1. Records outcome into sliding window and evaluates `_evaluate_workload_shift()`.
+  2. Inspects `item in self.h_lru`:
+     - Checks if `current_step - evict_step > self.ghost_ttl` (if expired, ignores without penalty).
+     - Otherwise, computes effective learning rate `_compute_effective_learning_rate()` (damped if isolated miss, full if shift active) and applies exponential penalty to $w_{LRU}$.
+  3. Inspects `item in self.h_lfu`:
+     - Checks TTL expiration.
+     - Otherwise, applies exponential penalty to $w_{LFU}$.
+  4. Purges `item` from both ghost caches before inserting into active cache.
+  5. If weights were modified, normalizes weights via `_normalize_weights()`.
+  6. Informs sub-experts `lru_expert.on_miss()` and `lfu_expert.on_miss()`.
+  7. **Mutually Exclusive Ghost Insertion**:
+     - If `last_chosen_expert == "LRU"`, removes `evicted_item` from `h_lfu` and adds to `h_lru`.
+     - If `last_chosen_expert == "LFU"`, removes `evicted_item` from `h_lru` and adds to `h_lfu`.
+     - If `last_chosen_expert == "CONSENSUS"`, consensus evictions are neutral; removes from both ghost caches.
+
+#### `LeCaRAdaptivePolicy._compute_effective_learning_rate(target_expert, dominant_expert)`
+- **Signature**: `_compute_effective_learning_rate(self, target_expert: str, dominant_expert: str) -> float`
+- **Why It's Used**: Prevents knee-jerk policy switching on an isolated unlucky miss while allowing rapid adaptation during genuine workload shifts.
+- **How It Works**: Returns full `self.learning_rate` if `self.is_shift_active` is true or if regret is sustained ($\ge 2$ ghost hits in window). If an isolated miss occurs on the dominant expert during steady-state, scales learning rate by `self.damping_factor` (e.g. 0.35).
+
+#### `LeCaRAdaptivePolicy._evaluate_workload_shift()`
+- **Signature**: `_evaluate_workload_shift(self) -> None`
+- **Why It's Used**: Detects abrupt workload distribution changes by comparing recent window metrics against the steady-state baseline.
+- **How It Works**: Inspects sliding window outcomes. Sets `self.is_shift_active = True` if:
+  1. Recent hit rate drops below baseline by $\ge \text{shift\_threshold}$ (e.g. 0.20), OR
+  2. Unique item density $\ge 0.85$ with hit rate $< 0.15$ (sequential scan/burst), OR
+  3. Dominant expert accumulates $\ge 2$ ghost hits within the sliding window.
+
+#### `LeCaRAdaptivePolicy._check_transition_status(is_miss)`
+- **Signature**: `_check_transition_status(self, is_miss: bool) -> None`
+- **Why It's Used**: Makes policy switching **measurable** by tracking adaptation latency and extra misses.
+- **How It Works**: Initiates a transition record upon workload shift or weight crossover. Tracks elapsed request duration and misses until the new dominant expert stabilizes ($w \ge 0.65$ or steady state). Computes extra misses as $\text{actual\_misses} - \text{expected\_baseline\_misses}$ and appends to `completed_transitions`.
 
 #### `LeCaRAdaptivePolicy._add_to_ghost(ghost_dict, item)`
 - **Signature**: `_add_to_ghost(self, ghost_dict: OrderedDict[Any, int], item: Any) -> None`
-- **Why It's Used**: Records an evicted item into an expert's ghost cache while enforcing the bounded capacity limit $|H| \le \alpha \cdot C$.
-- **How It Works**: Inserts `ghost_dict[item] = current_step`. If size exceeds `ghost_capacity`, removes the oldest entry using `ghost_dict.popitem(last=False)`.
+- **Why It's Used**: Enforces bounded ghost capacity $|H| \le \alpha \cdot C$ and lazily purges expired ghost entries exceeding `self.ghost_ttl`.
 
 #### `LeCaRAdaptivePolicy._normalize_weights()`
 - **Signature**: `_normalize_weights(self) -> None`
 - **Why It's Used**: Prevents probability extinction ($\epsilon_{\min}$ floor), guards against NaNs, and guarantees $w_{LRU} + w_{LFU} = 1.0$.
-- **How It Works**:
-  1. Enforces $w_i = \max(w_i, \epsilon_{\min})$.
-  2. Computes total $Z = w_{LRU} + w_{LFU}$.
-  3. If $Z$ is valid, sets $w_i \leftarrow w_i / Z$; otherwise resets to $0.5, 0.5$.
 
 #### `LeCaRAdaptivePolicy.reset()`
-- **Why It's Used**: Reinitializes the adaptive policy for new runs.
-- **How It Works**: Clears ghost caches, resets both experts, resets weights to $0.5$, and clears history logs.
+- **Signature**: `reset(self) -> None`
+- **Why It's Used**: Reinitializes all weights, ghost caches, detectors, and transition logs.
 
 #### `LeCaRAdaptivePolicy.get_state()`
-- **Why It's Used**: Telemetry provider for live dashboard metrics.
-- **How It Works**: Returns a dictionary with keys: `w_lru`, `w_lfu`, `h_lru_size`, `h_lfu_size`, `ghost_hits_lru`, `ghost_hits_lfu`, and `last_chosen_expert`.
+- **Signature**: `get_state(self) -> Dict[str, Any]`
+- **Why It's Used**: Exposes telemetry for dashboard and benchmarking, including: `w_lru`, `w_lfu`, `h_lru_size`, `h_lfu_size`, `ghost_hits_lru`, `ghost_hits_lfu`, `expired_ghost_entries`, `is_shift_active`, `completed_transitions`, `avg_adaptation_latency`, and `total_extra_misses`.
 
 ---
 

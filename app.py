@@ -218,7 +218,11 @@ def main():
 
                 st.info(
                     f"💡 **Ghost Cache Telemetry**: LRU Ghost Hits: **{policy.ghost_hits_lru}** | "
-                    f"LFU Ghost Hits: **{policy.ghost_hits_lfu}** | Active Ghost LRU Size: {len(policy.h_lru)} | Ghost LFU Size: {len(policy.h_lfu)}"
+                    f"LFU Ghost Hits: **{policy.ghost_hits_lfu}** | Expired Entries: **{policy.expired_ghost_entries}** | "
+                    f"Workload Shift Active: **{policy.is_shift_active}**\n\n"
+                    f"🔄 **Policy Switching Metrics**: Transitions Detected: **{len(policy.completed_transitions)}** | "
+                    f"Avg Adaptation Latency: **{policy.get_state()['avg_adaptation_latency']} requests** | "
+                    f"Extra Transition Misses: **{policy.get_state()['total_extra_misses']}**"
                 )
 
             # Current Cache Contents Chip View
@@ -276,6 +280,14 @@ def main():
             c2.metric("LFU Hit Rate", f"{res_lfu.hit_rate * 100:.2f}%")
             c3.metric("SmartCache Hit Rate", f"{res_smart.hit_rate * 100:.2f}%", delta=f"{(res_smart.hit_rate - res_lfu.hit_rate)*100:+.2f}% vs LFU")
             c4.metric("Belady Oracle (Upper Bound)", f"{res_belady.hit_rate * 100:.2f}%")
+
+            # Transition Switching Measurement Cards
+            t_state = pol_smart.get_state()
+            ct1, ct2, ct3, ct4 = st.columns(4)
+            ct1.metric("Transitions Detected", f"{t_state['completed_transitions']}")
+            ct2.metric("Avg Adaptation Latency", f"{t_state['avg_adaptation_latency']} reqs")
+            ct3.metric("Extra Transition Misses", f"{t_state['total_extra_misses']}")
+            ct4.metric("Expired Ghost Entries", f"{t_state['expired_ghost_entries']}")
 
             # Dual Charts: Rolling Hit Rates & SmartCache Weights
             window = 40
