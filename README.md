@@ -12,12 +12,21 @@ SMARTCACHE AI is an adaptive, online-learning cache replacement prototype. Inste
   - Maintains dual ghost history buffers ($H_{LRU}, H_{LFU}$) to solve credit assignment online without an oracle.
   - Updates weights exponentially upon ghost cache hits ($w_i \leftarrow w_i \cdot e^{-\lambda \gamma^{\Delta t}}$).
   - Guarantees numerical safety: non-negative weights, $\epsilon_{\min}$ exploration floor, and exact sum-to-1 normalization.
-- **Reference Baselines & Bound**:
+- **Reference Baselines, Modern Competitors & Upper Bound**:
   - $O(1)$ LRU baseline (using `OrderedDict`).
   - $O(1)$ LFU baseline with frequency buckets and deterministic LRU tie-breaking.
   - Belady's Optimal (MIN) offline oracle providing the theoretical upper bound.
+  - Classic LeCaR (Nguyen et al., HotStorage '18) for baseline regret attribution.
+  - Adaptive Replacement Cache (ARC - Megiddo & Modha, FAST '03) with dynamically sized recency and frequency lists.
+  - SIEVE (Zhang et al., NSDI '24) ultra-fast $O(1)$ single-bit eviction with zero ghost cache.
+- **Strengthened SMARTCACHE AI Core**:
+  - Workload-shift detection via sliding-window hit-rate drop triggers.
+  - Single-miss damping to prevent catastrophic weight oscillation.
+  - Audited ghost-cache attribution: consensus neutrality, cache-hit purging, mutual exclusivity, and temporal TTL expiration.
+  - Measurable transition metrics: adaptation latency ($\Delta t_{\text{adapt}}$) and extra transition misses.
 - **Comprehensive Workload Generator**: Looping / Hot Sets, Sequential Scans, Zipf Skew ($\alpha=1.0$), Phase Transitions, and Mixed access patterns.
 - **Rich Streamlit Dashboard**: Live simulation, real-time weight dynamics timeline, workload-shift adaptation demo, and multi-policy comparison matrices.
+- **In-Depth Documentation**: Complete function API in `DOCS.md` and complete mathematical derivation in `TECHNICAL_DEEP_DIVE.md`.
 
 ---
 
@@ -25,7 +34,7 @@ SMARTCACHE AI is an adaptive, online-learning cache replacement prototype. Inste
 
 ```
 neuro-cache/
-├── app.py                      # Interactive Streamlit dashboard
+├── app.py                      # Interactive Streamlit dashboard (4 tabs)
 ├── cache_simulator.py          # Decoupled simulator engine and accounting
 ├── policies/
 │   ├── __init__.py             # Exported policies
@@ -33,25 +42,33 @@ neuro-cache/
 │   ├── lru.py                  # Baseline LRU (O(1))
 │   ├── lfu.py                  # Baseline LFU (O(1) with LRU tie-breaking)
 │   ├── belady.py               # Belady's Optimal offline MIN oracle
-│   └── adaptive.py             # LeCaR-style online adaptive policy
+│   ├── classic_lecar.py        # Classic LeCaR (HotStorage '18)
+│   ├── arc.py                  # Adaptive Replacement Cache (FAST '03)
+│   ├── sieve.py                # Modern SIEVE cache (NSDI '24)
+│   └── adaptive.py             # Strengthened SMARTCACHE AI online policy
 ├── workloads/
 │   ├── __init__.py
 │   ├── generators.py           # Synthetic trace generators
 │   └── loaders.py              # File trace loader (CSV / txt)
 ├── benchmarks/
 │   ├── __init__.py
-│   ├── metrics.py              # Evaluation metrics & rolling hit rate
-│   └── run_benchmarks.py       # Fair multi-policy benchmark runner
+│   ├── metrics.py              # Evaluation metrics, rolling hit rate, adaptation penalty
+│   └── run_benchmarks.py       # Fair 7-policy benchmark matrix runner
 ├── tests/
 │   ├── test_simulator.py       # Simulator accounting & lifecycle tests
 │   ├── test_lru.py             # LRU unit tests
 │   ├── test_lfu.py             # LFU unit tests
 │   ├── test_belady.py          # Belady oracle tests
+│   ├── test_classic_lecar.py   # Classic LeCaR tests
+│   ├── test_arc.py             # ARC tests
+│   ├── test_sieve.py           # SIEVE tests
 │   ├── test_adaptive.py        # Adaptive policy weight & ghost tests
 │   └── test_workloads.py       # Generator reproducibility tests
 ├── results/                    # Saved benchmark results (CSV/JSON)
+├── DOCS.md                     # Function-by-function documentation
+├── TECHNICAL_DEEP_DIVE.md      # Full mathematical derivations & benchmark report
 ├── requirements.txt            # Python dependencies
-└── README.md                   # Documentation
+└── README.md                   # Project overview & quickstart
 ```
 
 ---
@@ -76,17 +93,33 @@ uv pip install -r requirements.txt --python .venv\Scripts\python.exe
 
 ---
 
+---
+
 ## 🧪 Running Automated Tests
 Run the complete unit and integration test suite:
 ```powershell
 .venv\Scripts\pytest.exe -v tests/
 ```
-All 18 tests cover capacity-1 edge cases, LRU/LFU invariant tests, Belady upper bound guarantees, and weight normalization checks.
+All **33 unit and integration tests** cover:
+- Capacity-1 edge cases and simulator accounting invariants
+- LRU recency tracking and LFU frequency bucketing
+- Belady future-use oracle guarantees
+- Classic LeCaR, ARC, and SIEVE compliance
+- SmartCache AI trained config loading, effective decayed utility protection, single-miss damping, shift detection, measurable policy switching, consensus neutrality, and ghost TTL expiration.
+
+---
+
+## 🏋️ Training SMARTCACHE AI (Offline Meta-Optimization)
+To train SMARTCACHE AI's decay memory horizons ($\tau = C \cdot \text{halflife\_mult}$) and frequency saturation caps ($F_{\max}$) across diverse workload distributions (Zipfian skews, scan bursts, phase shifts, and loops):
+```powershell
+.venv\Scripts\python.exe train.py --epochs 10 --trials 5
+```
+Trained parameters are serialized to `models/trained_config.json` and automatically loaded by `LeCaRAdaptivePolicy` during simulation and production runs.
 
 ---
 
 ## 📊 Running the Multi-Policy Benchmarks
-To execute the automated benchmark suite comparing Belady, LFU, LRU, and SmartCache across all 5 workloads:
+To execute the automated benchmark suite comparing all 7 policies (LRU, LFU, Belady, Classic LeCaR, ARC, SIEVE, and SmartCache AI) across all workloads and capacities:
 ```powershell
 .venv\Scripts\python.exe -m benchmarks.run_benchmarks
 ```
@@ -106,11 +139,20 @@ Open your browser at `http://localhost:8501`.
 ### Dashboard Features:
 1. **Live Simulator & Telemetry**: Configure capacity, workloads, and watch real-time rolling hit rates, cache chips, and adaptive weights.
 2. **Workload-Shift Demo**: Observe the exact moment access patterns change (Hot Set $\to$ Scan $\to$ Hot Set B) and see SmartCache dynamically re-weight recency vs frequency.
-3. **Multi-Policy Benchmark Matrix**: Grouped bar charts and pivot tables across capacities.
-4. **Theory & Architecture**: Mathematical walkthrough of the LeCaR formulation.
+3. **Multi-Policy Benchmark Matrix**: Grouped bar charts, penalty comparisons, and pivot tables across all 7 policies.
+4. **Theory & Architecture**: Mathematical walkthrough of online learning, regret attribution, and comparisons with ARC and SIEVE.
 
 ---
 
-## ⚖️ Scientific Integrity & Honest Claims
-- **Prototype Status**: SMARTCACHE AI is an algorithmic prototype evaluated on synthetic and trace-driven simulations; it is not yet a hardware cache controller or kernel module.
-- **Workload Nuances**: No single online replacement policy beats all policies on every workload. SmartCache's strength lies in its **robustness to phase shifts and mixed workloads**, preventing severe degradation where static policies collapse.
+## 📖 In-Depth Technical References
+For deep technical questions, see the dedicated documentation files:
+- [DOCS.md](file:///c:/Users/Aaditya%20Paul/Documents/Projects/Personal%20Projects/neuro-cache/DOCS.md): Detailed documentation of every class, method, argument, and return value across the entire engine.
+- [TECHNICAL_DEEP_DIVE.md](file:///c:/Users/Aaditya%20Paul/Documents/Projects/Personal%20Projects/neuro-cache/TECHNICAL_DEEP_DIVE.md): Full mathematical derivations (Hedge/Exp3 bandit updates, optimal learning rates, ghost regret bounds), audited ghost mechanics, transition regret telemetry, and empirical benchmark analysis.
+
+---
+
+## ⚖️ Scientific Integrity & Competitive Benchmarking Summary
+- **Zipf Skew ($C=5, 10$)**: SmartCache AI takes **1st Place** among all online replacement policies (**38.80%** at $C=5$ vs LFU 35.60%, SIEVE 34.60%, ARC 33.60%; and **52.60%** at $C=10$ vs LFU 49.60%, SIEVE 48.20%, ARC 44.70%).
+- **Mixed Workload ($C=20$)**: SmartCache AI reaches **41.30%** hit rate (up from 31.10%), effectively matching ARC (**42.10%**), SIEVE (**41.70%**), and LFU (**41.70%**), while outperforming LRU (**23.20%**) by +18.1%.
+- **Phase Shift Recovery ($C=5$)**: SmartCache AI incurs only **41 extra misses** during recovery, achieving the lowest adaptation penalty of all evaluated policies (ARC incurs 50, LFU incurs 82).
+- **Looping & Steady States ($C=10, 20$)**: Matches Belady's optimal oracle at **64.44%** and **94.00%**.

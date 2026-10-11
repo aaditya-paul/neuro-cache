@@ -7,6 +7,7 @@ and audited ghost-cache credit attribution.
 """
 from collections import deque, OrderedDict
 import math
+import os
 import random
 from typing import Any, Deque, Dict, List, Optional, Set, Tuple
 
@@ -37,7 +38,9 @@ class LeCaRAdaptivePolicy(BasePolicy):
         damping_factor: float = 0.35,
         shift_threshold: float = 0.20,
         epsilon_min: float = 0.005,
-        deterministic: bool = False,
+        halflife_mult: Optional[float] = None,
+        freq_cap: Optional[float] = None,
+        deterministic: bool = True,
         seed: Optional[int] = 42,
         name: str = "SmartCache (LeCaR)",
     ) -> None:
@@ -56,7 +59,26 @@ class LeCaRAdaptivePolicy(BasePolicy):
         self.shift_threshold = shift_threshold
         self.epsilon_min = epsilon_min
         self.deterministic = deterministic
+        self.seed = seed
         self.rng = random.Random(seed)
+
+        # Trained parameters (load from models/trained_config.json if available)
+        default_hl = 5.0
+        default_fc = 15.0
+        config_path = os.path.join(os.path.dirname(__file__), "..", "models", "trained_config.json")
+        if os.path.exists(config_path):
+            try:
+                import json
+                with open(config_path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                hp = cfg.get("hyperparameters", {})
+                default_hl = hp.get("halflife_mult", default_hl)
+                default_fc = hp.get("freq_cap", default_fc)
+            except Exception:
+                pass
+
+        self.halflife_mult: float = halflife_mult if halflife_mult is not None else default_hl
+        self.freq_cap: float = freq_cap if freq_cap is not None else default_fc
 
         # Experts
         self.lru_expert = LRUPolicy(name="LRU_Expert")
@@ -77,6 +99,10 @@ class LeCaRAdaptivePolicy(BasePolicy):
         self.ghost_hits_lfu: int = 0
         self.expired_ghost_entries: int = 0
 
+        # Frequency and recency tracking for decayed effective utility
+        self.last_access: Dict[Any, int] = {}
+        self.freq: Dict[Any, int] = {}
+
         # Workload-shift detection state
         self.window_size: int = max(20, 2 * self.capacity)
         self.recent_outcomes: Deque[Tuple[bool, Any]] = deque(maxlen=self.window_size)
@@ -91,8 +117,22 @@ class LeCaRAdaptivePolicy(BasePolicy):
         # Telemetry history for dashboard: (step, w_lru, w_lfu)
         self.weight_history: List[Tuple[int, float, float]] = [(0, 0.5, 0.5)]
 
+    def _get_halflife(self) -> float:
+        """Compute memory halflife in requests, dynamically bounded and shift-aware."""
+        hl = self.capacity * self.halflife_mult
+        if self.is_shift_active:
+            hl = min(hl, max(2.0, self.capacity * 1.5))
+        return max(2.0, hl)
+
+    def _get_effective_utility(self, item: Any) -> float:
+        """Compute effective decayed access utility for a cached block."""
+        f = min(self.freq_cap, float(self.freq.get(item, 1)))
+        age = self.current_step - self.last_access.get(item, self.current_step)
+        hl = self._get_halflife()
+        return f * math.exp(-0.693 * age / hl)
+
     def choose_victim(self, cache_items: Set[Any], context: Optional[Dict[str, Any]] = None) -> Any:
-        """Select a victim by consulting LRU and LFU experts and sampling by weights."""
+        """Select a victim by consulting LRU and LFU experts and evaluating decayed utility."""
         v_lru = self.lru_expert.choose_victim(cache_items, context)
         v_lfu = self.lfu_expert.choose_victim(cache_items, context)
 
@@ -101,21 +141,26 @@ class LeCaRAdaptivePolicy(BasePolicy):
             self.last_chosen_expert = "CONSENSUS"
             return v_lru
 
-        # Experts disagree: sample based on weights or choose argmax
+        # Calculate decayed utilities
+        u_lru = self._get_effective_utility(v_lru)
+        u_lfu = self._get_effective_utility(v_lfu)
+
         if self.deterministic:
-            if self.w_lru >= self.w_lfu:
-                chosen = "LRU"
-                victim = v_lru
-            else:
+            if u_lfu <= u_lru:
                 chosen = "LFU"
                 victim = v_lfu
+            else:
+                chosen = "LRU"
+                victim = v_lru
         else:
-            if self.rng.random() < self.w_lru:
-                chosen = "LRU"
-                victim = v_lru
-            else:
+            diff = u_lru - u_lfu
+            prob_lfu = 1.0 / (1.0 + math.exp(-max(-8.0, min(8.0, 3.0 * diff))))
+            if self.rng.random() < prob_lfu:
                 chosen = "LFU"
                 victim = v_lfu
+            else:
+                chosen = "LRU"
+                victim = v_lru
 
         self.last_chosen_expert = chosen
         return victim
@@ -123,6 +168,8 @@ class LeCaRAdaptivePolicy(BasePolicy):
     def on_hit(self, item: Any, context: Optional[Dict[str, Any]] = None) -> None:
         """Forward hit to both experts and purge item from ghost histories."""
         self.current_step += 1
+        self.last_access[item] = self.current_step
+        self.freq[item] = self.freq.get(item, 0) + 1
         
         # Invariant: Item in cache must NEVER reside in ghost caches
         self.h_lru.pop(item, None)
@@ -143,6 +190,8 @@ class LeCaRAdaptivePolicy(BasePolicy):
     def on_miss(self, item: Any, evicted_item: Optional[Any], context: Optional[Dict[str, Any]] = None) -> None:
         """Handle miss: attribute regret with TTL & shift awareness, update weights, then insert."""
         self.current_step += 1
+        self.last_access[item] = self.current_step
+        self.freq[item] = 1
         self.recent_outcomes.append((False, item))
         self.baseline_hit_rate = 0.95 * self.baseline_hit_rate + 0.05 * 0.0
 
@@ -202,6 +251,8 @@ class LeCaRAdaptivePolicy(BasePolicy):
 
         # 6. Record evicted item into appropriate ghost cache
         if evicted_item is not None:
+            self.freq.pop(evicted_item, None)
+            self.last_access.pop(evicted_item, None)
             if self.last_chosen_expert == "LRU":
                 # Ensure evicted item is mutually exclusive: remove from LFU ghost if present
                 self.h_lfu.pop(evicted_item, None)
@@ -352,6 +403,8 @@ class LeCaRAdaptivePolicy(BasePolicy):
         self.lfu_expert.reset()
         self.h_lru.clear()
         self.h_lfu.clear()
+        self.last_access.clear()
+        self.freq.clear()
         self.w_lru = 0.5
         self.w_lfu = 0.5
         self.current_step = 0
@@ -379,6 +432,8 @@ class LeCaRAdaptivePolicy(BasePolicy):
         return {
             "w_lru": round(self.w_lru, 4),
             "w_lfu": round(self.w_lfu, 4),
+            "halflife_mult": round(self.halflife_mult, 2),
+            "freq_cap": round(self.freq_cap, 1),
             "h_lru_size": len(self.h_lru),
             "h_lfu_size": len(self.h_lfu),
             "ghost_hits_lru": self.ghost_hits_lru,

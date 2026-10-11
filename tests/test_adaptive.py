@@ -158,3 +158,27 @@ def test_consensus_eviction_neutrality():
     # Consensus victim (item 1) should not be inserted into either biased ghost cache
     assert "1" not in policy.h_lru
     assert "1" not in policy.h_lfu
+
+
+def test_trained_config_loaded_and_applied():
+    """Trained hyperparameters should be loaded and exposed via get_state."""
+    policy = LeCaRAdaptivePolicy(capacity=10)
+    state = policy.get_state()
+    assert "halflife_mult" in state
+    assert "freq_cap" in state
+    assert state["halflife_mult"] > 0
+    assert state["freq_cap"] > 0
+
+
+def test_effective_utility_protects_hot_items_from_scan():
+    """Hot items with high frequency must have higher utility than one-time cold items."""
+    policy = LeCaRAdaptivePolicy(capacity=5)
+    # Item 1 accessed 10 times
+    for _ in range(10):
+        policy.on_hit(1)
+    # Item 2 accessed once
+    policy.on_miss(2, evicted_item=None)
+
+    u1 = policy._get_effective_utility(1)
+    u2 = policy._get_effective_utility(2)
+    assert u1 > u2

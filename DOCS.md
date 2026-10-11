@@ -207,21 +207,32 @@ class LeCaRAdaptivePolicy(BasePolicy):
         damping_factor: float = 0.35,
         shift_threshold: float = 0.20,
         epsilon_min: float = 0.005,
-        deterministic: bool = False,
+        halflife_mult: Optional[float] = None,
+        freq_cap: Optional[float] = None,
+        deterministic: bool = True,
         seed: Optional[int] = 42,
         name: str = "SmartCache (LeCaR)",
     ) -> None
 ```
 
+- **Trained Parameters**:
+  - `halflife_mult: float`: Memory decay horizon ($\tau = C \cdot \text{halflife\_mult}$). Loaded from `models/trained_config.json` if available (default 5.0).
+  - `freq_cap: float`: Saturation threshold $F_{\max}$ for raw frequency counts (default 15.0).
+
+#### `LeCaRAdaptivePolicy._get_effective_utility(item)`
+- **Why It's Used**: Calculates the recency-decayed access utility $u(v) = \min(F_{\max}, f) \cdot e^{-\ln(2) \cdot \text{age} / \tau}$ to eliminate scan pollution while enabling agile phase shift recovery.
+- **How It Works**: Computes elapsed steps since last access, evaluates exponential decay against adaptive halflife $\tau$, and scales by capped frequency.
+
 #### `LeCaRAdaptivePolicy.choose_victim(cache_items, context)`
-- **Why It's Used**: Decides which item to evict by polling both the LRU and LFU experts and weighting their recommendations.
+- **Why It's Used**: Decides which item to evict by consulting LRU and LFU experts and evaluating their candidates against the decayed effective utility model.
 - **How It Works**:
   1. Calls `v_lru = self.lru_expert.choose_victim(cache_items)`.
   2. Calls `v_lfu = self.lfu_expert.choose_victim(cache_items)`.
   3. If $v_{lru} == v_{lfu}$ (consensus): sets `self.last_chosen_expert = "CONSENSUS"` and returns the agreed victim.
   4. If $v_{lru} \ne v_{lfu}$ (disagreement):
-     - If `deterministic == True`: selects the expert with the higher weight.
-     - Else: samples $E \sim \text{Bernoulli}(w_{LRU})$. If random value $< w_{LRU}$, chooses $v_{lru}$ and sets `last_chosen_expert = "LRU"`; otherwise chooses $v_{lfu}$ and sets `last_chosen_expert = "LFU"`.
+     - Computes decayed utilities $u_{lru} = u(v_{lru})$ and $u_{lfu} = u(v_{lfu})$.
+     - In deterministic mode (default): evicts the candidate with lower decayed utility (`v_lfu` if $u_{lfu} \le u_{lru}$ else `v_lru`).
+     - In stochastic mode: samples with soft sigmoid probability modulated by $u_{lru} - u_{lfu}$.
   5. Returns the chosen victim.
 
 #### `LeCaRAdaptivePolicy.on_hit(item, context)`
@@ -601,6 +612,12 @@ class CacheSimulator:
 ---
 
 ## 7. How to Run the System
+
+### Training SMARTCACHE AI (Offline Meta-Optimization)
+```powershell
+.venv\Scripts\python.exe train.py --epochs 10 --trials 5
+```
+*(Optimizes decay memory horizons and frequency saturation caps, saving to `models/trained_config.json`)*
 
 ### Running Automated Tests
 ```powershell
