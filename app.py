@@ -678,8 +678,15 @@ def main():
                 r_status = "🟢 HIT" if ev_r.is_hit else f"🔴 MISS (Evicted: {ev_r.evicted_item or 'None'})"
                 l_status = "🟢 HIT" if ev_l.is_hit else f"🔴 MISS (Evicted: {ev_l.evicted_item or 'None'})"
 
-                is_advantage = ev_s.is_hit and not ev_r.is_hit
-                is_pollution = not ev_r.is_hit and ev_r.evicted_item and ("product" in str(ev_r.evicted_item) or "hot_" in str(ev_r.evicted_item)) and ("scan" in key_str or "export" in key_str)
+                is_advantage = bool(ev_s.is_hit and not ev_r.is_hit)
+                has_evicted = ev_r.evicted_item is not None
+                evicted_str = str(ev_r.evicted_item) if has_evicted else ""
+                is_pollution = bool(
+                    (not ev_r.is_hit)
+                    and has_evicted
+                    and ("product" in evicted_str or "hot_" in evicted_str)
+                    and ("scan" in key_str or "export" in key_str)
+                )
 
                 event_rows.append({
                     "Step": idx + 1,
@@ -688,8 +695,8 @@ def main():
                     "Redis LRU (5)": r_status,
                     "Redis LFU (5)": l_status,
                     "Outcome": "🔥 SmartCache Advantage" if is_advantage else ("⚠️ Scan Pollution" if is_pollution else "—"),
-                    "_adv": is_advantage,
-                    "_poll": is_pollution,
+                    "_adv": bool(is_advantage),
+                    "_poll": bool(is_pollution),
                 })
 
             df_events = pd.DataFrame(event_rows)
@@ -706,11 +713,14 @@ def main():
             )
 
             if "Advantage Events" in filter_mode:
-                filtered_df = df_events[df_events["_adv"]]
+                filtered_df = df_events[df_events["_adv"] == True]
             elif "Scan Pollution" in filter_mode:
-                filtered_df = df_events[df_events["_poll"]]
+                filtered_df = df_events[df_events["_poll"] == True]
             elif "Missed by Both" in filter_mode:
-                filtered_df = df_events[df_events["SmartCache AI"].str.contains("MISS") & df_events["Redis LRU (5)"].str.contains("MISS")]
+                filtered_df = df_events[
+                    df_events["SmartCache AI"].str.contains("MISS", na=False)
+                    & df_events["Redis LRU (5)"].str.contains("MISS", na=False)
+                ]
             else:
                 filtered_df = df_events
 
